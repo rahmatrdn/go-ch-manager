@@ -1,67 +1,121 @@
-<div class="max-w-md mx-auto bg-gray-800 p-6 rounded-lg border border-gray-700">
-    <h1 class="text-xl font-bold mb-4 text-white">Edit Connection</h1>
+<div class="max-w-2xl mx-auto animate-fade-in-down">
+    <div class="mb-8 text-center">
+        <h1 class="text-3xl font-bold text-white tracking-tight">Edit Connection</h1>
+        <p class="text-gray-400 mt-2">Update configuration for {{.Connection.Name}}</p>
+    </div>
 
-    <form action="/connections/{{.Connection.ID}}/edit" method="POST" class="space-y-4">
-        <div>
-            <label class="block text-gray-400 text-sm mb-1">Name</label>
-            <input type="text" name="name" value="{{.Connection.Name}}"
-                class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white placeholder-gray-500" required>
-        </div>
+    <div class="glass p-8 rounded-2xl border border-white/5 shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-primary-500/5 blur-3xl pointer-events-none"></div>
 
-        <div>
-            <label class="block text-gray-400 text-sm mb-1">Host</label>
-            <input type="text" name="host" value="{{.Connection.Host}}"
-                class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white placeholder-gray-500" required>
-        </div>
+        <form action="/connections/{{.Connection.ID}}/edit" method="POST" class="space-y-6 relative z-10">
+            <!-- Connection Basics -->
+            <div class="grid grid-cols-1 gap-6">
+                <div>
+                    <label class="block text-gray-300 text-sm font-semibold mb-2">Display Name</label>
+                    <input type="text" name="name" value="{{.Connection.Name}}"
+                        class="w-full bg-gray-900/60 border border-gray-700/50 rounded-lg p-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none"
+                        required>
+                </div>
 
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block text-gray-400 text-sm mb-1">Port</label>
-                <input type="number" name="port" value="{{.Connection.Port}}"
-                    class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white" required>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="md:col-span-3">
+                        <label class="block text-gray-300 text-sm font-semibold mb-2">Host</label>
+                        <input type="text" name="host" value="{{.Connection.Host}}"
+                            class="w-full bg-gray-900/60 border border-gray-700/50 rounded-lg p-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 text-sm font-semibold mb-2">Port</label>
+                        <input type="number" name="port" value="{{.Connection.Port}}"
+                            class="w-full bg-gray-900/60 border border-gray-700/50 rounded-lg p-3 text-white focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none"
+                            required>
+                    </div>
+                </div>
             </div>
-            <div>
-                <label class="block text-gray-400 text-sm mb-1">Protocol</label>
-                <select name="protocol" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white"
-                    id="protocolSelect">
-                    <option value="native">Native (TCP)</option>
-                    <option value="http">HTTP</option>
-                </select>
-                <script>
-                    // Simple inline script to set selected value
-                    document.getElementById('protocolSelect').value = "{{.Connection.Protocol}}";
-                </script>
+
+            <!-- Protocol & Auth -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                <div>
+                    <label class="block text-gray-300 text-sm font-semibold mb-2">Protocol</label>
+                    <div class="relative">
+                        <select name="protocol" id="protocolSelect"
+                            class="w-full bg-gray-900/60 border border-gray-700/50 rounded-lg p-3 text-white appearance-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none cursor-pointer">
+                            <option value="http">HTTP (8123)</option>
+                            <option value="native">Native TCP (9000)</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                        <script>
+                            document.getElementById('protocolSelect').value = "{{.Connection.Protocol}}";
+                        </script>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-300 text-sm font-semibold mb-2">Database</label>
+                    <input type="text" name="database" value="{{.Connection.Database}}"
+                        class="w-full bg-gray-900/60 border border-gray-700/50 rounded-lg p-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none">
+                </div>
             </div>
-        </div>
 
-        <div>
-            <label class="block text-gray-400 text-sm mb-1">Username</label>
-            <input type="text" name="username" value="{{.Connection.Username}}"
-                class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white placeholder-gray-500">
-        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                <div>
+                    <label class="block text-gray-300 text-sm font-semibold mb-2">Username</label>
+                    <input type="text" name="username" value="{{.Connection.Username}}"
+                        class="w-full bg-gray-900/60 border border-gray-700/50 rounded-lg p-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none">
+                </div>
+                <div>
+                    <label class="block text-gray-300 text-sm font-semibold mb-2">Password</label>
+                    <input type="password" name="password" value="{{.Connection.Password}}"
+                        class="w-full bg-gray-900/60 border border-gray-700/50 rounded-lg p-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none">
+                </div>
+            </div>
 
-        <div>
-            <label class="block text-gray-400 text-sm mb-1">Password</label>
-            <input type="password" name="password" value="{{.Connection.Password}}"
-                class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white placeholder-gray-500">
-        </div>
+            <div class="flex items-center gap-3 pt-2">
+                <div class="relative flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="use_ssl" name="use_ssl" type="checkbox"
+                            class="w-5 h-5 border border-gray-600 rounded bg-gray-700 focus:ring-3 focus:ring-primary-500/50 ring-offset-0 focus:ring-offset-0 transition-all checked:bg-primary-600"
+                            {{if .Connection.UseSSL}}checked{{end}}>
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="use_ssl" class="font-medium text-gray-300 select-none cursor-pointer">Enable
+                            SSL/TLS</label>
+                        <p class="text-gray-500 text-xs">Recommended for production connections</p>
+                    </div>
+                </div>
+            </div>
 
-        <div>
-            <label class="block text-gray-400 text-sm mb-1">Database</label>
-            <input type="text" name="database" value="{{.Connection.Database}}"
-                class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white placeholder-gray-500">
-        </div>
-
-        <div class="flex items-center gap-2 mt-2">
-            <input type="checkbox" name="use_ssl" id="use_ssl" class="w-4 h-4 rounded bg-gray-700 border-gray-600" {{if
-                .Connection.UseSSL}}checked{{end}}>
-            <label for="use_ssl" class="text-gray-300 text-sm">Use SSL</label>
-        </div>
-
-        <div class="pt-4 flex justify-end gap-3">
-            <a href="/" class="px-4 py-2 text-gray-400 hover:text-white transition">Cancel</a>
-            <button type="submit"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-white font-medium transition">Update</button>
-        </div>
-    </form>
+            <div class="pt-8 flex justify-end gap-4 border-t border-white/5 mt-6">
+                <a href="/"
+                    class="px-6 py-2.5 text-gray-400 hover:text-white font-medium transition-colors hover:bg-white/5 rounded-lg">Cancel</a>
+                <button type="submit"
+                    class="px-8 py-2.5 bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-500 hover:to-indigo-500 text-white font-bold rounded-lg shadow-lg shadow-primary-500/30 transition-all transform hover:scale-105">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<style>
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-down {
+        animation: fadeInDown 0.5s ease-out forwards;
+    }
+</style>

@@ -92,6 +92,7 @@ func (c *clientImpl) getConnection(conn *entity.CHConnection) (driver.Conn, erro
 	if err != nil {
 		return nil, err
 	}
+	helper.DumpWithTitle(newConn, "newConn")
 
 	// Verify new connection immediately
 	if err := newConn.Ping(context.Background()); err != nil {

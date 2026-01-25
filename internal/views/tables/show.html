@@ -1,77 +1,117 @@
-<div class="max-w-4xl mx-auto">
-    <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-3xl font-bold text-white">{{.Schema.Name}}</h1>
-        <a href="/connections/{{.ConnectionID}}/tables" class="text-gray-400 hover:text-white">&larr; Back to Tables</a>
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-10 flex items-center justify-between animate-fade-in-down">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-gradient-to-br from-primary-600 to-blue-600 rounded-xl shadow-lg shadow-primary-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">{{.Schema.Name}}</h1>
+                <p class="text-gray-400 text-sm">Table Schema & Definition</p>
+            </div>
+        </div>
+        <a href="/connections/{{.ConnectionID}}"
+            class="group flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
+            <div
+                class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary-500 group-hover:text-white transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </div>
+            Back to Dashboard
+        </a>
     </div>
 
-    <details class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden shadow-xl mb-6 group" open>
-        <summary
-            class="bg-gray-700 px-4 py-3 border-b border-gray-600 font-semibold text-gray-300 cursor-pointer flex items-center justify-between hover:bg-gray-600 transition">
-            <span>Column List</span>
-            <span class="text-gray-500 group-open:rotate-180 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clip-rule="evenodd" />
+    <!-- Column List -->
+    <div
+        class="glass rounded-xl border border-white/5 overflow-hidden shadow-2xl mb-8 animate-fade-in-up group/details">
+        <div
+            class="bg-gray-800/50 px-6 py-4 border-b border-gray-700/50 flex items-center justify-between backdrop-blur-md">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <svg class="w-5 h-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                 </svg>
-            </span>
-        </summary>
+                Column List
+            </h3>
+        </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-gray-800 text-gray-400 text-sm border-b border-gray-700">
-                        <th class="p-3 font-medium">Column Name</th>
-                        <th class="p-3 font-medium">Type</th>
+                    <tr
+                        class="bg-gray-800/30 text-gray-400 text-xs uppercase tracking-wider font-semibold border-b border-white/5">
+                        <th class="px-6 py-4">Column Name</th>
+                        <th class="px-6 py-4">Type</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-700/50">
                     {{range .Schema.Columns}}
-                    <tr class="hover:bg-gray-750 border-b border-gray-700 last:border-0 transition">
-                        <td class="p-3 font-mono text-blue-300 border-r border-gray-700/50">{{.Name}}</td>
-                        <td class="p-3 text-gray-400 font-mono text-sm">{{.Type}}</td>
+                    <tr class="hover:bg-white/5 transition duration-150">
+                        <td class="px-6 py-3 font-mono text-primary-300 font-medium">{{.Name}}</td>
+                        <td class="px-6 py-3 text-gray-400 font-mono text-sm">{{.Type}}</td>
                     </tr>
                     {{end}}
                 </tbody>
             </table>
         </div>
-    </details>
+    </div>
 
+    <!-- Create SQL -->
     {{if .CreateSQL}}
-    <details class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden shadow-xl group" open>
-        <summary
-            class="bg-gray-700 px-4 py-3 border-b border-gray-600 font-semibold text-gray-300 cursor-pointer flex items-center justify-between hover:bg-gray-600 transition">
-            <span>Create Statement</span>
-            <span class="text-gray-500 group-open:rotate-180 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clip-rule="evenodd" />
+    <div class="glass rounded-xl border border-white/5 overflow-hidden shadow-2xl animate-fade-in-up"
+        style="animation-delay: 100ms">
+        <div
+            class="bg-gray-800/50 px-6 py-4 border-b border-gray-700/50 flex items-center justify-between backdrop-blur-md">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <svg class="w-5 h-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
-            </span>
-        </summary>
-        <div class="relative">
+                Create Statement
+            </h3>
+
             <button onclick="copyToClipboard()"
-                class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-xs border border-gray-600 transition flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                class="group bg-gray-700/50 hover:bg-primary-600 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg border border-gray-600 hover:border-primary-500 transition-all duration-200 flex items-center gap-2 text-xs font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
-                Copy
+                Copy SQL
             </button>
-            <div class="p-4 overflow-x-auto bg-gray-900">
+        </div>
+
+        <div class="relative bg-black/40">
+            <div class="p-6 overflow-x-auto custom-scrollbar">
                 <pre id="createSqlContent"
-                    class="font-mono text-sm text-green-400 whitespace-pre-wrap">{{.CreateSQL}}</pre>
+                    class="font-mono text-sm text-emerald-400 whitespace-pre-wrap leading-relaxed">{{.CreateSQL}}</pre>
             </div>
         </div>
-    </details>
+    </div>
 
     <script>
         function copyToClipboard() {
             const text = document.getElementById('createSqlContent').innerText;
             navigator.clipboard.writeText(text).then(function () {
-                // Could show toast here
-                alert('Copied to clipboard!');
+                const btn = document.querySelector('button[onclick="copyToClipboard()"]');
+                const originalHtml = btn.innerHTML;
+
+                btn.innerHTML = `<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Copied!`;
+                btn.classList.add('bg-green-600', 'border-green-500', 'text-white');
+                btn.classList.remove('bg-gray-700/50', 'text-gray-300');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.remove('bg-green-600', 'border-green-500', 'text-white');
+                    btn.classList.add('bg-gray-700/50', 'text-gray-300');
+                }, 2000);
             }, function (err) {
                 console.error('Async: Could not copy text: ', err);
             });
@@ -79,3 +119,47 @@
     </script>
     {{end}}
 </div>
+
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    .animate-fade-in-down {
+        animation: fadeInDown 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        height: 8px;
+        background: #0f172a;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+    }
+</style>

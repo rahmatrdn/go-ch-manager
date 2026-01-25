@@ -5,38 +5,99 @@
 
 <style>
     .CodeMirror {
-        height: 16rem;
-        /* h-64 equivalent */
-        border-radius: 0.5rem;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        height: 18rem;
+        border-radius: 0.75rem;
+        font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         font-size: 0.875rem;
+        background-color: #1f2937 !important;
+        /* gray-800 */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.5rem;
+    }
+
+    .cm-s-dracula.CodeMirror {
+        background-color: #1a202c !important;
+        /* gray-850 to match theme better */
+    }
+
+    .CodeMirror-focused {
+        border-color: #FFCC00 !important;
+        /* primary-500 */
+        box-shadow: 0 0 0 1px #FFCC00;
     }
 </style>
 
-<div class="max-w-6xl mx-auto">
-    <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-white">Compare Queries</h1>
-        <a href="/connections/{{.ConnectionID}}" class="text-gray-400 hover:text-white">&larr; Back to Dashboard</a>
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between animate-fade-in-down">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20">
+                <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">Compare Queries</h1>
+                <p class="text-gray-400 text-sm">Analyze performance differences between two SQL queries</p>
+            </div>
+        </div>
+        <a href="/connections/{{.ConnectionID}}"
+            class="group flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
+            <div
+                class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary-500 group-hover:text-white transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </div>
+            Back to Dashboard
+        </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- Query Editors -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8 animate-fade-in-up">
         <!-- Before Query -->
-        <div class="flex flex-col">
-            <label class="mb-2 text-gray-400 text-sm font-semibold uppercase">Before Query</label>
-            <textarea id="query1" name="query1" placeholder="SELECT ..."></textarea>
+        <div class="flex flex-col group">
+            <label class="mb-3 flex items-center justify-between">
+                <span class="text-gray-300 text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-gray-500"></span>
+                    Original Query
+                </span>
+                <span class="text-xs text-gray-500 font-mono">Control</span>
+            </label>
+            <div
+                class="relative rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 group-hover:ring-primary-500/50 transition-all duration-300">
+                <textarea id="query1" name="query1" placeholder="SELECT ... FROM table"></textarea>
+            </div>
         </div>
 
         <!-- After Query -->
-        <div class="flex flex-col">
-            <label class="mb-2 text-gray-400 text-sm font-semibold uppercase">After Query</label>
-            <textarea id="query2" name="query2" placeholder="SELECT ..."></textarea>
+        <div class="flex flex-col group">
+            <label class="mb-3 flex items-center justify-between">
+                <span class="text-gray-300 text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></span>
+                    Optimized Query
+                </span>
+                <span class="text-xs text-gray-500 font-mono">Test</span>
+            </label>
+            <div
+                class="relative rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 group-hover:ring-primary-500/50 transition-all duration-300">
+                <textarea id="query2" name="query2" placeholder="SELECT ... FROM table"></textarea>
+            </div>
         </div>
     </div>
 
-    <div class="mb-8 text-center">
+    <!-- Actions -->
+    <div class="mb-12 text-center animate-fade-in-up" style="animation-delay: 100ms">
         <button onclick="runComparison()" id="compare-btn"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition transform hover:scale-105 flex items-center justify-center mx-auto gap-2">
-            <span>Run Comparison</span>
+            class="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 text-base font-bold text-white transition-all duration-200 bg-primary-600 rounded-full hover:bg-primary-500 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-primary-500 overflow-hidden">
+            <div
+                class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer">
+            </div>
+            <span>Run Performance Analysis</span>
             <svg id="btn-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg"
                 fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -44,31 +105,90 @@
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                 </path>
             </svg>
+            <svg id="btn-icon" class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
         </button>
-        <p id="error-msg" class="text-red-500 mt-4 hidden"></p>
+        <p id="error-msg"
+            class="text-red-400 bg-red-900/20 border border-red-500/30 rounded-lg px-4 py-2 mt-4 inline-block hidden font-medium">
+        </p>
     </div>
 
     <!-- Results Section -->
-    <div id="results-section" class="hidden">
-        <h2 class="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2">Comparison Results</h2>
+    <div id="results-section" class="hidden animate-fade-in-up">
+        <div class="flex items-center gap-3 mb-6">
+            <h2 class="text-xl font-bold text-white">Analysis Results</h2>
+            <div class="h-px bg-gray-800 flex-1"></div>
+        </div>
 
-        <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+        <div class="glass overflow-hidden rounded-xl border border-white/5 shadow-2xl">
             <table class="w-full text-left">
-                <thead class="bg-gray-900 text-gray-400 text-xs uppercase font-medium">
-                    <tr>
-                        <th class="px-6 py-4">Metric</th>
-                        <th class="px-6 py-4 text-center">Before</th>
-                        <th class="px-6 py-4 text-center">After</th>
-                        <th class="px-6 py-4 text-right">Diff</th>
+                <thead>
+                    <tr
+                        class="bg-gray-800/80 text-gray-400 text-xs uppercase tracking-wider font-semibold border-b border-white/5">
+                        <th class="px-8 py-5">Metric</th>
+                        <th class="px-8 py-5 text-center bg-gray-800/50">Before</th>
+                        <th class="px-8 py-5 text-center bg-primary-900/10">After</th>
+                        <th class="px-8 py-5 text-right">Difference</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-700 text-gray-300" id="results-body">
+                <tbody class="divide-y divide-gray-700/50 text-gray-300" id="results-body">
                     <!-- Populated by JS -->
                 </tbody>
             </table>
         </div>
+
+        <div class="mt-4 text-center text-xs text-gray-500">
+            Metrics retrieved directly from ClickHouse <code
+                class="bg-gray-800 px-1 py-0.5 rounded text-gray-400">system.query_log</code>
+        </div>
     </div>
 </div>
+
+<style>
+    @keyframes shimmer {
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    .group-hover\:animate-shimmer:hover {
+        animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    .animate-fade-in-down {
+        animation: fadeInDown 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 
 <script>
     const connId = "{{.ConnectionID}}";
@@ -81,14 +201,14 @@
         indentWithTabs: true,
         smartIndent: true,
         matchBrackets: true,
-        autofocus: true
+        autofocus: false,
+        lineWrapping: true,
     };
 
     const cm1 = CodeMirror.fromTextArea(document.getElementById("query1"), editorConfig);
     const cm2 = CodeMirror.fromTextArea(document.getElementById("query2"), editorConfig);
 
     function runComparison() {
-        // Save CodeMirror content to textareas to ensure we get the value
         cm1.save();
         cm2.save();
 
@@ -96,13 +216,14 @@
         const q2 = cm2.getValue();
 
         if (!q1 || !q2) {
-            $('#error-msg').text('Please enter both queries.').removeClass('hidden');
+            $('#error-msg').text('Please enter both queries to analyze.').removeClass('hidden');
             return;
         }
 
         $('#error-msg').addClass('hidden');
         $('#compare-btn').prop('disabled', true).addClass('opacity-75 cursor-wait');
         $('#btn-spinner').removeClass('hidden');
+        $('#btn-icon').addClass('hidden');
         $('#results-section').addClass('hidden');
 
         $.ajax({
@@ -113,13 +234,18 @@
             success: function (response) {
                 renderResults(response.data);
                 $('#results-section').removeClass('hidden');
+                // Scroll to results
+                $('html, body').animate({
+                    scrollTop: $("#results-section").offset().top - 100
+                }, 500);
             },
             error: function (err) {
-                $('#error-msg').text(`Error: ${err.responseJSON?.message || err.responseText}`).removeClass('hidden');
+                $('#error-msg').text(`Analysis Failed: ${err.responseJSON?.message || err.responseText}`).removeClass('hidden');
             },
             complete: function () {
                 $('#compare-btn').prop('disabled', false).removeClass('opacity-75 cursor-wait');
                 $('#btn-spinner').addClass('hidden');
+                $('#btn-icon').removeClass('hidden');
             }
         });
     }
@@ -134,7 +260,7 @@
         ];
 
         let html = '';
-        metrics.forEach(m => {
+        metrics.forEach((m, idx) => {
             const v1 = data.query1_stats[m.key] || 0;
             const v2 = data.query2_stats[m.key] || 0;
 
@@ -142,27 +268,36 @@
             const diffPercent = v1 === 0 ? (v2 === 0 ? 0 : 100) : ((diff / v1) * 100).toFixed(1);
 
             let diffColor = 'text-gray-400';
+            let diffBg = '';
             let arrow = '';
+            let resultIcon = '';
 
             // Lower is usually better for these metrics
             if (diff < 0) {
-                diffColor = 'text-green-400';
+                diffColor = 'text-emerald-400 font-bold';
+                diffBg = 'bg-emerald-500/5';
                 arrow = '↓';
+                resultIcon = '<span class="ml-2 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold bg-emerald-500/20 text-emerald-400">Improv</span>';
             } else if (diff > 0) {
-                diffColor = 'text-red-400';
+                diffColor = 'text-rose-400 font-bold';
+                diffBg = 'bg-rose-500/5';
                 arrow = '↑';
+                resultIcon = '<span class="ml-2 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold bg-rose-500/20 text-rose-400">Regress</span>';
             }
 
             const val1 = m.format ? m.format(v1) : (v1 + (m.unit ? ' ' + m.unit : ''));
             const val2 = m.format ? m.format(v2) : (v2 + (m.unit ? ' ' + m.unit : ''));
 
             html += `
-                <tr class="hover:bg-gray-750 transition">
-                    <td class="px-6 py-4 font-medium text-white">${m.label}</td>
-                    <td class="px-6 py-4 text-center font-mono text-sm text-gray-400">${val1}</td>
-                    <td class="px-6 py-4 text-center font-mono text-sm text-white font-bold">${val2}</td>
-                    <td class="px-6 py-4 text-right font-mono text-sm ${diffColor}">
-                        ${arrow} ${Math.abs(diffPercent)}% <span class="text-xs text-gray-500">(${diff > 0 ? '+' : ''}${m.format ? m.format(diff) : diff})</span>
+                <tr class="group hover:bg-white/5 transition border-l-2 border-transparent hover:border-primary-500">
+                    <td class="px-8 py-5 font-medium text-gray-200">${m.label}</td>
+                    <td class="px-8 py-5 text-center font-mono text-sm text-gray-400 group-hover:text-white transition-colors bg-gray-800/30">${val1}</td>
+                    <td class="px-8 py-5 text-center font-mono text-sm text-white font-bold bg-primary-500/5 shadow-[inset_0_0_10px_rgba(0,0,0,0.2)]">${val2}</td>
+                    <td class="px-8 py-5 text-right font-mono text-sm ${diffColor} ${diffBg}">
+                        <div class="flex items-center justify-end gap-2">
+                             <span>${arrow} ${Math.abs(diffPercent)}%</span>
+                             <span class="text-xs text-gray-500 font-normal">(${diff > 0 ? '+' : ''}${m.format ? m.format(diff) : diff})</span>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -173,7 +308,7 @@
 
     function formatBytes(bytes) {
         if (bytes === 0) return '0 B';
-        if (Math.abs(bytes) === 0) return '0 B'; // handle 0 diff
+        if (Math.abs(bytes) === 0) return '0 B';
 
         const k = 1024;
         const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];

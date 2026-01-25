@@ -1,86 +1,206 @@
-<div class="max-w-6xl mx-auto">
-    <div class="mb-6 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+<div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in-down">
+        <div class="flex items-center gap-6">
+            <div class="relative">
+                <h1 class="text-3xl font-bold text-white tracking-tight">Dashboard</h1>
+                <div
+                    class="absolute -bottom-2 left-0 w-1/3 h-1 bg-gradient-to-r from-primary-500 to-transparent rounded-full">
+                </div>
+            </div>
 
-            <h1 class="text-2xl font-bold text-white">Dashboard</h1>
             {{if .Databases}}
-            <select onchange="window.location.href='?db='+this.value"
-                class="bg-gray-800 border border-gray-700 text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2">
-                <option value="" disabled {{if not .SelectedDB}}selected{{end}}>Select Database</option>
-                {{$selected := .SelectedDB}}
-                {{range .Databases}}
-                <option value="{{.}}" {{if eq $selected .}}selected{{end}}>{{.}}</option>
-                {{end}}
-            </select>
+            <div class="relative group">
+                <div
+                    class="absolute -inset-0.5 bg-gradient-to-r from-primary-600 to-blue-600 rounded-lg blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200">
+                </div>
+                <select onchange="window.location.href='?db='+this.value"
+                    class="relative bg-gray-900 border border-gray-700 text-gray-300 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 hover:bg-gray-800 transition-colors cursor-pointer appearance-none pr-10">
+                    <option value="" disabled {{if not .SelectedDB}}selected{{end}}>Select Database</option>
+                    {{$selected := .SelectedDB}}
+                    {{range .Databases}}
+                    <option value="{{.}}" {{if eq $selected .}}selected{{end}}>{{.}}</option>
+                    {{end}}
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
             {{end}}
         </div>
-        <a href="/connections/{{.ConnectionID}}" class="text-gray-400 hover:text-white">&larr; Back to Menu</a>
+        <a href="/connections/{{.ConnectionID}}"
+            class="group flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
+            <div
+                class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary-500 group-hover:text-white transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </div>
+            Back to Connections
+        </a>
     </div>
 
     <!-- Stats Cards -->
-    <div id="loading-state" class="py-20 text-center">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-        <p class="text-gray-400">Loading tables...</p>
-    </div>
-
-    <div id="dashboard-content" class="hidden">
-        <h2 class="text-xl font-semibold text-gray-300 mb-6" id="db-title-display">Database: <span
-                class="text-white">{{.SelectedDB}}</span></h2>
-
-        <!-- Stats Container -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" id="stats-container">
-            <!-- Populated by JS -->
-        </div>
-
-        <!-- Search Input -->
-        <div class="relative mb-8">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 20 20">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                </svg>
+    <div id="loading-state" class="py-32 text-center">
+        <div class="relative inline-block">
+            <div class="absolute inset-0 bg-primary-500 blur-xl opacity-20 animate-pulse"></div>
+            <div
+                class="relative inline-block animate-spin rounded-full h-14 w-14 border-4 border-gray-700 border-t-primary-500 mb-4">
             </div>
-            <input type="text" id="table-search"
-                class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-700 rounded-lg bg-gray-800 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 text-white"
-                placeholder="Search tables...">
         </div>
-
-        <!-- Tables Container -->
-        <div id="tables-container">
-            <!-- Populated by JS -->
-        </div>
-
-        <div id="no-tables-msg"
-            class="hidden text-center py-20 bg-gray-800 rounded border border-gray-700 border-dashed">
-            <p class="text-gray-500 text-lg">No tables found matching your criteria.</p>
-        </div>
+        <p class="text-gray-400 text-lg font-medium animate-pulse">Syncing catalog...</p>
     </div>
 
+    <div id="dashboard-content" class="hidden animate-fade-in-up">
+
+        <!-- Active DB & Stats -->
+        <div class="mb-10">
+            <div class="flex items-end gap-3 mb-6">
+                <h2 class="text-sm font-bold text-primary-400 uppercase tracking-widest">Active Database</h2>
+                <div class="h-px bg-gray-800 flex-1 mb-1.5"></div>
+            </div>
+            <h2 class="text-4xl font-extrabold text-white mb-8 tracking-tight flex items-center gap-3">
+                <span
+                    class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">{{.SelectedDB}}</span>
+                <span
+                    class="px-2.5 py-0.5 rounded-full bg-primary-500/10 text-primary-400 text-xs font-bold border border-primary-500/20">ONLINE</span>
+            </h2>
+
+            <!-- Stats Container -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10" id="stats-container">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Tables Section -->
+        <div class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Tables & Views
+                </h3>
+
+                <!-- Search Input -->
+                <div class="relative w-full md:w-96 group">
+                    <div
+                        class="absolute -inset-0.5 bg-gradient-to-r from-primary-600 to-indigo-600 rounded-lg blur opacity-0 group-focus-within:opacity-30 transition duration-500">
+                    </div>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500 group-focus-within:text-primary-400 transition-colors"
+                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="table-search"
+                            class="block w-full p-2.5 pl-10 text-sm text-white bg-gray-900/80 border border-gray-700 rounded-lg focus:ring-0 focus:border-primary-500 focus:outline-none placeholder-gray-500 transition-all shadow-inner"
+                            placeholder="Filter tables by name...">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <span class="text-xs text-gray-600 border border-gray-700 rounded px-1.5 py-0.5">/</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tables Container -->
+            <div id="tables-container">
+                <!-- Populated by JS -->
+            </div>
+
+            <div id="no-tables-msg"
+                class="hidden text-center py-24 bg-gray-800/30 rounded-2xl border border-gray-700/50 border-dashed">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4">
+                    <svg class="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <p class="text-gray-400 text-lg font-medium">No results found</p>
+                <p class="text-gray-500 text-sm mt-1">Try adjusting your search query</p>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    .animate-fade-in-down {
+        animation: fadeInDown 0.5s ease-out forwards;
+    }
+</style>
 
 <script>
     const connId = "{{.ConnectionID}}";
     let allTables = []; // Store all tables for client-side filtering
 
+    // Keyboard shortcut for search
+    document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+            e.preventDefault();
+            document.getElementById('table-search').focus();
+        }
+    });
+
     $(document).ready(function () {
         const db = "{{.SelectedDB}}";
 
-        // Show loading (already visible by default structure, keeping explicit)
+        // Show loading
         $('#loading-state').show();
-        $('#dashboard-content').hide();
+        $('#dashboard-content').removeClass('hidden').hide(); // Ensure it's hidden but class removed for fadeIn
 
         $.ajax({
             url: `/api/v1/connections/${connId}/tables?db=${db}`,
             method: 'GET',
             success: function (response) {
-                allTables = response.data || []; // Store globally
+                allTables = response.data || [];
                 renderDashboard(allTables, connId);
-                $('#loading-state').hide();
-                $('#dashboard-content').fadeIn();
+                $('#loading-state').fadeOut(200, function () {
+                    $('#dashboard-content').fadeIn(300);
+                });
             },
             error: function (err) {
-                $('#loading-state').html(`<p class="text-red-500">Error loading data: ${err.responseText || 'Unknown error'}</p>`);
+                $('#loading-state').html(`
+                    <div class="bg-red-500/10 border border-red-500/50 rounded-lg p-4 inline-block">
+                        <p class="text-red-400 font-medium">Error loading data</p>
+                        <p class="text-red-500/70 text-sm mt-1">${err.responseText || 'Unknown error occurred'}</p>
+                    </div>
+                `);
             }
         });
 
@@ -95,7 +215,15 @@
     function renderDashboard(tables, connId) {
         if (!tables || tables.length === 0) {
             $('#no-tables-msg').removeClass('hidden');
-            return;
+            $('#stats-container').parent().addClass('hidden'); // Hide stats if no tables? Actually keeps stats visible usually better, but if 0 tables maybe hide. 
+            // Let's keep stats visible unless really empty array from start, but here we might be filtering.
+            // If filtering results in 0, we show no-msg.
+            // If initial load was 0, stats will be 0.
+
+            // Only hide stats if ALL tables are empty, not just filtered. But here 'tables' is the filtered list.
+            // Let's just show the message.
+        } else {
+            $('#no-tables-msg').addClass('hidden');
         }
 
         const stats = {};
@@ -117,17 +245,29 @@
 
         // Render Stats
         let statsHtml = `
-            <div class="bg-gray-800 p-4 rounded border border-gray-700">
-                <h3 class="text-sm font-medium text-gray-400 uppercase">Total Tables</h3>
-                <p class="text-3xl font-bold text-white mt-1">${total}</p>
+            <div class="glass p-5 rounded-xl border border-white/5 relative overflow-hidden group hover:bg-white/5 transition-colors">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-primary-500/20 rounded-full blur-2xl group-hover:bg-primary-500/30 transition-colors"></div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest relative z-10">Total Objects</h3>
+                <p class="text-4xl font-black text-white mt-1 relative z-10">${total}</p>
+                <div class="mt-2 h-1 w-full bg-gray-700/50 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary-500" style="width: 100%"></div>
+                </div>
             </div>
         `;
 
-        Object.keys(stats).forEach(key => {
+        Object.keys(stats).forEach((key, idx) => {
+            const colors = ['bg-emerald-500', 'bg-amber-500', 'bg-pink-500', 'bg-cyan-500'];
+            const color = colors[idx % colors.length];
+            const percent = (stats[key] / total) * 100;
+
             statsHtml += `
-            <div class="bg-gray-800 p-4 rounded border border-gray-700">
-                <h3 class="text-sm font-medium text-gray-400 uppercase">${key}</h3>
-                <p class="text-3xl font-bold text-white mt-1">${stats[key]}</p>
+            <div class="glass p-5 rounded-xl border border-white/5 relative overflow-hidden group hover:bg-white/5 transition-colors">
+                <div class="absolute -right-6 -top-6 w-24 h-24 ${color} rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest relative z-10">${key}</h3>
+                <p class="text-4xl font-black text-white mt-1 relative z-10">${stats[key]}</p>
+                <div class="mt-2 h-1 w-full bg-gray-700/50 rounded-full overflow-hidden">
+                    <div class="h-full ${color}" style="width: ${percent}%"></div>
+                </div>
             </div>`;
         });
         $('#stats-container').html(statsHtml);
@@ -135,31 +275,57 @@
         // Render Tables
         let tablesHtml = '';
         Object.keys(grouped).forEach((group, index) => {
-            // Create safe ID for the group
             const groupId = 'group-' + index;
             const iconId = 'icon-' + index;
 
             tablesHtml += `
-            <div class="mb-8">
-                <div class="flex items-center justify-between mb-4 border-b border-gray-700 pb-2 cursor-pointer group" onclick="toggleGroup('${groupId}', '${iconId}')">
-                    <h2 class="text-xl font-bold text-blue-400">${group}</h2>
-                    <svg id="${iconId}" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="mb-10 animate-fade-in-up" style="animation-delay: ${index * 100}ms">
+                <div class="flex items-center justify-between mb-5 pb-2 border-b border-gray-800 cursor-pointer group" onclick="toggleGroup('${groupId}', '${iconId}')">
+                    <div class="flex items-center gap-3">
+                        <div class="p-1.5 rounded-lg bg-gray-800 text-primary-400 group-hover:bg-primary-500 group-hover:text-white transition-colors">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </div>
+                        <h2 class="text-lg font-bold text-gray-200 group-hover:text-white transition-colors">${group}</h2>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded bg-gray-800 text-gray-500 group-hover:text-gray-400">${grouped[group].length}</span>
+                    </div>
+                    
+                    <svg id="${iconId}" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 group-hover:text-white transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </div>
-                <div id="${groupId}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-300 origin-top">
+                <div id="${groupId}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 transition-all duration-300 origin-top">
             `;
 
             grouped[group].forEach(t => {
+                let iconColor = "text-gray-500";
+                let borderColor = "group-hover:border-primary-500/50";
+
+                if (group === "Views") { iconColor = "text-amber-500"; borderColor = "group-hover:border-amber-500/50"; }
+                if (group === "Materialized Views") { iconColor = "text-pink-500"; borderColor = "group-hover:border-pink-500/50"; }
+
                 tablesHtml += `
-                <a href="/connections/${connId}/tables/${t.name}" class="bg-gray-800 p-4 rounded border border-gray-700 hover:border-blue-500 hover:shadow-lg transition block group">
-                    <div class="flex items-center justify-between mb-1">
-                        <div class="font-medium text-gray-500 text-xs uppercase tracking-wide">${t.engine}</div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 group-hover:text-blue-500 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                <a href="/connections/${connId}/tables/${t.name}" class="group relative bg-gray-900/40 p-5 rounded-xl border border-gray-800 ${borderColor} hover:shadow-lg hover:shadow-primary-900/20 hover:bg-gray-800 transition-all duration-300 block overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0 duration-300">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
                     </div>
-                    <div class="text-xl font-bold text-gray-100 truncate" title="${t.name}">${t.name}</div>
+                    
+                    <div class="flex flex-col h-full justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="font-bold text-[10px] uppercase tracking-wider text-gray-500 bg-gray-800/80 px-2 py-1 rounded border border-gray-700/50 group-hover:bg-gray-700/80 transition-colors">${t.engine}</div>
+                            </div>
+                            <div class="text-base font-bold text-gray-200 truncate group-hover:text-white transition-colors pr-6" title="${t.name}">${t.name}</div>
+                        </div>
+                        
+                        <div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 transform translate-y-2 group-hover:translate-y-0">
+                            <div class="h-0.5 w-4 bg-primary-500 rounded-full"></div>
+                            <span class="text-xs text-primary-400 font-medium">View Details</span>
+                        </div>
+                    </div>
                 </a>
                 `;
             });

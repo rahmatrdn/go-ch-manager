@@ -1,65 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.PageTitle}} - Go CH Manager</title>
+
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        gray: {
+                            750: '#2d3748',
+                            850: '#1a202c',
+                            900: '#111827',
+                            950: '#030712', // Ultra dark for background
+                        },
+                        primary: {
+                            400: '#FFE066',
+                            500: '#FFCC00',
+                            600: '#E6B800',
+                            700: '#CCA300',
+                            glow: 'rgba(255, 204, 0, 0.5)' // Custom glow color (Yellow)
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(255, 204, 0, 0.3)',
+                        'glow-lg': '0 0 25px rgba(255, 204, 0, 0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- NProgress -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+
     <style>
+        /* Custom NProgress */
         #nprogress .bar {
-            background: #3b82f6 !important;
-            height: 8px !important;
+            background: #FFCC00 !important;
+            /* Primary 500 */
+            height: 7px !important;
+            box-shadow: 0 0 10px #FFCC00, 0 0 5px #FFCC00;
         }
 
+        /* Modern Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #1f2937;
+            background: #0f172a;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #374151;
+            background: #334155;
             border-radius: 4px;
+            border: 2px solid #0f172a;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #4b5563;
+            background: #475569;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-sidebar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: #030712;
+            /* Gray 950 */
+            background-image: radial-gradient(circle at 15% 50%, rgba(255, 204, 0, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(255, 204, 0, 0.08) 0%, transparent 25%);
         }
     </style>
 </head>
 
-<body class="bg-gray-900 text-gray-100 font-sans antialiased">
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
-            <div class="h-16 flex items-center px-6 border-b border-gray-700">
-                <a href="/" class="text-xl font-bold text-white flex items-center gap-2">
-                    <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                        </svg>
-                    </div>
-                    CH Manager
-                </a>
-            </div>
+<body
+    class="text-gray-200 font-sans antialiased h-screen flex overflow-hidden selection:bg-primary-500 selection:text-white">
 
-            <div class="flex-1 overflow-y-auto py-4">
-                <div class="px-4 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Connections</div>
-                <nav class="space-y-1 px-2">
+    <!-- Sidebar -->
+    <aside class="w-64 glass-sidebar flex flex-col transition-all duration-300 z-20 shadow-2xl">
+        <!-- Logo Area -->
+        <div class="h-20 flex items-center px-6 border-b border-white/5">
+            <a href="/" class="group flex items-center gap-3 decoration-0">
+                <div
+                    class="relative w-9 h-9 flex items-center justify-center bg-primary-600 rounded-xl shadow-lg ring-1 ring-white/10 group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent rounded-xl"></div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <span
+                        class="text-lg font-bold text-white tracking-tight leading-none group-hover:text-primary-400 transition-colors">CH
+                        Manager</span>
+                    <span class="text-[10px] uppercase font-semibold text-gray-500 tracking-wider">Optimus</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex-1 overflow-y-auto py-6 px-3 space-y-6">
+
+            <!-- Connection Section -->
+            <div>
+                <div class="px-3 mb-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Connections</div>
+                <nav class="space-y-1">
                     <a href="/"
-                        class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition">
-                        <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-300" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
+                        class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all duration-200">
+                        <svg class="mr-3 h-5 w-5 text-gray-500 group-hover:text-primary-400 transition-colors"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                         </svg>
@@ -67,40 +146,59 @@
                     </a>
 
                     {{range .SidebarConnections}}
-                    <a href="/connections/{{.ID}}"
-                        class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition">
-                        <span class="w-2.5 h-2.5 mr-3 rounded-full bg-green-500"></span>
-                        <!-- Dynamic status color would be nice here -->
-                        {{.Name}}
-                    </a>
+                    <div class="relative group/item">
+                        <a href="/connections/{{.ID}}"
+                            class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all duration-200">
+                            <span
+                                class="w-2 h-2 mr-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"></span>
+                            <span class="truncate">{{.Name}}</span>
+                        </a>
+                    </div>
                     {{end}}
 
                     <a href="/connections/create"
-                        class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-blue-400 hover:bg-blue-900/30 hover:text-blue-300 transition mt-4">
-                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-primary-400 hover:bg-primary-500/10 hover:text-primary-300 transition-all duration-200 mt-2 border border-dashed border-primary-500/20 hover:border-primary-500/40">
+                        <svg class="mr-3 h-5 w-5 transition-transform duration-300 group-hover:rotate-90" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Add New
+                        <span>Add New Connection</span>
                     </a>
                 </nav>
             </div>
 
-            <div class="p-4 border-t border-gray-700">
-                <div class="text-xs text-gray-500 text-center">v0.1.0</div>
-            </div>
-        </aside>
+        </div>
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto bg-gray-900 relative">
-            <div class="p-8">
+        <!-- Footer -->
+        <div class="p-4 border-t border-white/5 bg-black/20">
+            <div class="flex items-center justify-between">
+                <div class="text-[10px] text-gray-500 font-mono">v0.1.0-beta</div>
+                <div class="flex space-x-2">
+                    <div class="w-2 h-2 rounded-full bg-gray-700 hover:bg-green-500 transition-colors cursor-help"
+                        title="System Status: Online"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <main class="flex-1 overflow-hidden relative flex flex-col">
+        <!-- Top Bar (Optional, can be used for breadcrumbs or active user profile) -->
+        <!-- <header class="h-16 flex items-center justify-between px-8 border-b border-white/5 glass z-10">
+           ...
+        </header> -->
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto w-full scroll-smooth">
+            <div class="max-w-7xl mx-auto p-8 lg:p-10">
                 {{embed}}
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
 
     <script>
         // NProgress Integration
-        NProgress.configure({ showSpinner: false });
+        NProgress.configure({ showSpinner: false, speed: 500 });
 
         // Trigger on click of any internal link
         document.addEventListener('click', function (e) {

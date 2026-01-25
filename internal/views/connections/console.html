@@ -1,99 +1,245 @@
-<div class="max-w-6xl mx-auto">
-    <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-white">Query Console</h1>
-        <a href="/connections/{{.ConnectionID}}" class="text-gray-400 hover:text-white">&larr; Back to Menu</a>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+
+<style>
+    .CodeMirror {
+        height: 20rem;
+        border-radius: 0.75rem;
+        font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.875rem;
+        background-color: #1a202c !important;
+        /* gray-850 */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.5rem;
+    }
+
+    .cm-s-dracula.CodeMirror {
+        background-color: #1a202c !important;
+    }
+
+    .CodeMirror-focused {
+        border-color: #FFCC00 !important;
+        /* primary-500 */
+        box-shadow: 0 0 0 1px #FFCC00;
+    }
+</style>
+
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between animate-fade-in-down">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">Query Console</h1>
+                <p class="text-gray-400 text-sm">Execute SQL queries directly</p>
+            </div>
+        </div>
+        <a href="/connections/{{.ConnectionID}}"
+            class="group flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
+            <div
+                class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary-500 group-hover:text-white transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </div>
+            Back to Dashboard
+        </a>
     </div>
 
     <!-- Query Editor -->
-    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 mb-6">
-        <div class="mb-2 flex justify-between items-center">
-            <label class="text-gray-400 text-sm font-medium">SQL Query</label>
+    <div class="glass p-6 rounded-2xl border border-white/5 shadow-2xl mb-8 animate-fade-in-up">
+        <div class="mb-4 flex justify-between items-center">
+            <label class="text-primary-300 text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
+                Input Query
+            </label>
             <button id="run-query-btn"
-                class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1 px-4 rounded transition flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
+                class="group flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-5 py-2 rounded-lg font-bold transition-all hover:scale-105 shadow-lg shadow-primary-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Run
+                Execute Query
             </button>
         </div>
-        <textarea id="query-input"
-            class="w-full h-32 bg-gray-900 text-white font-mono text-sm p-3 rounded border border-gray-700 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="SELECT * FROM system.tables LIMIT 10">SELECT * FROM system.tables LIMIT 10</textarea>
-        <div id="query-error" class="text-red-400 text-sm mt-2 hidden"></div>
-    </div>
 
-    <!-- Loading -->
-    <div id="loading-indicator" class="hidden text-center py-10">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
-        <p class="text-gray-400 text-sm">Executing query...</p>
+        <div
+            class="relative shadow-inner rounded-xl overflow-hidden ring-1 ring-white/10 group-hover:ring-primary-500/30 transition-all">
+            <textarea id="query-input"
+                placeholder="SELECT * FROM system.tables LIMIT 10">SELECT * FROM system.tables LIMIT 50</textarea>
+        </div>
+
+        <div id="query-error" class="bg-red-900/20 border border-red-500/50 rounded-lg p-4 mt-4 hidden animate-pulse">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="text-red-200 text-sm font-mono break-all" id="query-error-text"></p>
+            </div>
+        </div>
     </div>
 
     <!-- Results Area -->
-    <div id="results-area" class="hidden">
+    <div id="loading-indicator" class="hidden text-center py-20">
+        <div class="relative inline-block">
+            <div class="absolute inset-0 bg-primary-500 blur-xl opacity-20 animate-pulse"></div>
+            <div
+                class="relative inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-primary-500 mb-4">
+            </div>
+        </div>
+        <p class="text-gray-400 text-sm font-medium animate-pulse">Processing query...</p>
+    </div>
+
+    <div id="results-area" class="hidden animate-fade-in-up">
+        <div class="flex items-center gap-3 mb-6">
+            <h2 class="text-xl font-bold text-white">Results</h2>
+            <div class="h-px bg-gray-800 flex-1"></div>
+        </div>
 
         <!-- Stats Bar -->
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
-            <div class="bg-gray-800 p-3 rounded border border-gray-700">
-                <div class="text-xs text-gray-500 uppercase">Duration</div>
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+            <div class="glass p-3 rounded-xl border border-white/5 text-center">
+                <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Duration</div>
                 <div class="text-lg font-bold text-white" id="stat-duration">-</div>
             </div>
-            <div class="bg-gray-800 p-3 rounded border border-gray-700">
-                <div class="text-xs text-gray-500 uppercase">Rows Read</div>
-                <div class="text-lg font-bold text-white" id="stat-rows">-</div>
+            <div class="glass p-3 rounded-xl border border-white/5 text-center">
+                <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Rows Read</div>
+                <div class="text-lg font-bold text-emerald-400" id="stat-rows">-</div>
             </div>
-            <div class="bg-gray-800 p-3 rounded border border-gray-700">
-                <div class="text-xs text-gray-500 uppercase">Bytes Read</div>
-                <div class="text-lg font-bold text-white" id="stat-bytes">-</div>
+            <div class="glass p-3 rounded-xl border border-white/5 text-center">
+                <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Bytes Read</div>
+                <div class="text-lg font-bold text-blue-400" id="stat-bytes">-</div>
             </div>
-            <div class="bg-gray-800 p-3 rounded border border-gray-700">
-                <div class="text-xs text-gray-500 uppercase">Memory Peak</div>
-                <div class="text-lg font-bold text-white" id="stat-memory">-</div>
+            <div class="glass p-3 rounded-xl border border-white/5 text-center">
+                <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Memory Peak</div>
+                <div class="text-lg font-bold text-purple-400" id="stat-memory">-</div>
             </div>
-            <div class="bg-gray-800 p-3 rounded border border-gray-700">
-                <div class="text-xs text-gray-500 uppercase">Parts Read</div>
-                <div class="text-lg font-bold text-white" id="stat-parts">-</div>
+            <div class="glass p-3 rounded-xl border border-white/5 text-center">
+                <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Parts Read</div>
+                <div class="text-lg font-bold text-gray-300" id="stat-parts">-</div>
             </div>
-            <div class="bg-gray-800 p-3 rounded border border-gray-700">
-                <div class="text-xs text-gray-500 uppercase">Marks Read</div>
-                <div class="text-lg font-bold text-white" id="stat-marks">-</div>
+            <div class="glass p-3 rounded-xl border border-white/5 text-center">
+                <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Marks Read</div>
+                <div class="text-lg font-bold text-gray-300" id="stat-marks">-</div>
             </div>
         </div>
 
         <!-- Table -->
-        <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-400">
-                    <thead class="text-xs text-gray-400 uppercase bg-gray-700/50">
+        <div class="glass rounded-xl border border-white/5 overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-sm text-left text-gray-300">
+                    <thead class="text-xs text-gray-400 uppercase bg-black/40 font-semibold border-b border-white/5">
                         <tr id="table-header">
                             <!-- Headers injected via JS -->
                         </tr>
                     </thead>
-                    <tbody id="table-body">
+                    <tbody id="table-body" class="divide-y divide-white/5">
                         <!-- Rows injected via JS -->
                     </tbody>
                 </table>
             </div>
-            <div id="no-results" class="hidden p-8 text-center text-gray-500">
-                No rows returned
+            <div id="no-results" class="hidden p-12 text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-800 mb-4">
+                    <svg class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <p class="text-gray-500 font-medium">Query executed successfully but returned no rows.</p>
+            </div>
+            <div id="limit-warning"
+                class="hidden px-6 py-2 bg-yellow-900/20 text-yellow-500 text-xs text-center border-t border-yellow-500/10">
+                Note: Display limited to top 100 rows for performance.
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    .animate-fade-in-down {
+        animation: fadeInDown 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        height: 10px;
+        background: #0f172a;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 5px;
+        border: 2px solid #0f172a;
+    }
+</style>
+
 <script>
     const connId = "{{.ConnectionID}}";
 
+    // Initialize CodeMirror
+    const editorConfig = {
+        mode: 'text/x-sql',
+        theme: 'dracula',
+        lineNumbers: true,
+        indentWithTabs: true,
+        smartIndent: true,
+        matchBrackets: true,
+        autofocus: true, // Autofocus for console
+        lineWrapping: true,
+    };
+
+    const editor = CodeMirror.fromTextArea(document.getElementById("query-input"), editorConfig);
+
     $(document).ready(function () {
         $('#run-query-btn').click(function () {
-            const query = $('#query-input').val().trim();
+            editor.save();
+            const query = editor.getValue().trim();
             if (!query) return;
 
             // Reset UI
-            $('#query-error').addClass('hidden').text('');
+            $('#query-error').addClass('hidden');
             $('#results-area').addClass('hidden');
             $('#loading-indicator').removeClass('hidden');
 
@@ -105,11 +251,17 @@
                 success: function (response) {
                     $('#loading-indicator').addClass('hidden');
                     renderResults(response.data);
+
+                    // Smooth scroll to results
+                    $('html, body').animate({
+                        scrollTop: $("#results-area").offset().top - 100
+                    }, 500);
                 },
                 error: function (err) {
                     $('#loading-indicator').addClass('hidden');
-                    const msg = err.responseJSON?.message || err.responseText || "Query failed";
-                    $('#query-error').text(msg).removeClass('hidden');
+                    const msg = err.responseJSON?.message || err.responseText || "Query execution failed";
+                    $('#query-error-text').text(msg);
+                    $('#query-error').removeClass('hidden');
                 }
             });
         });
@@ -132,22 +284,30 @@
         const rows = data.rows || [];
 
         // Headers
-        const headerHtml = cols.map(c => `<th scope="col" class="px-6 py-3 border-b border-gray-700 whitespace-nowrap">${c}</th>`).join('');
+        const headerHtml = cols.map(c => `<th scope="col" class="px-6 py-4 font-mono text-xs whitespace-nowrap text-primary-300 bg-gray-900/50">${c}</th>`).join('');
         $('#table-header').html(headerHtml);
 
         // Body
         if (rows.length === 0) {
             $('#table-body').empty();
             $('#no-results').removeClass('hidden');
+            $('#limit-warning').addClass('hidden');
         } else {
             $('#no-results').addClass('hidden');
-            const rowsHtml = rows.map(r => {
+
+            // Limit rendered rows for DOM performance if needed (though backend might limit too)
+            const displayRows = rows.slice(0, 100);
+            if (rows.length > 100) $('#limit-warning').removeClass('hidden');
+            else $('#limit-warning').addClass('hidden');
+
+            const rowsHtml = displayRows.map((r, idx) => {
                 const cells = cols.map(c => {
                     const val = r[c];
-                    const display = val === null ? '<span class="text-gray-600">NULL</span>' : escapeHtml(String(val));
-                    return `<td class="px-6 py-4 border-b border-gray-800 whitespace-nowrap text-gray-300 font-mono">${display}</td>`;
+                    let display = val === null ? '<span class="text-gray-600 italic">NULL</span>' : escapeHtml(String(val));
+                    if (val === '') display = '<span class="text-gray-700 italic">empty</span>';
+                    return `<td class="px-6 py-3 whitespace-nowrap text-gray-300 font-mono text-xs border-r border-white/5 last:border-0">${display}</td>`;
                 }).join('');
-                return `<tr class="bg-gray-800 hover:bg-gray-700 transition">${cells}</tr>`;
+                return `<tr class="hover:bg-white/5 transition duration-150 ${idx % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.02]'}">${cells}</tr>`;
             }).join('');
             $('#table-body').html(rowsHtml);
         }
