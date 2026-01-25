@@ -5,9 +5,9 @@
 `go-ch-manager` is a powerful and efficient tool built to simplify and optimize ClickHouse database management.
 
 Goals
-	•	Simplify ClickHouse administration by providing clear visibility and centralized control
-	•	Quickly identify performance bottlenecks in queries, storage, and resource usage
-	•	Enable faster troubleshooting and optimization with actionable insights and metrics
+- Simplify ClickHouse administration by providing clear visibility and centralized control
+- Quickly identify performance bottlenecks in queries, storage, and resource usage
+- Enable faster troubleshooting and optimization with actionable insights and metrics
 
 ## Tech Stacks
 - Go 1.25+
@@ -49,23 +49,6 @@ cp .env.example .env
 go run cmd/app/main.go
 ```
 
-### Api Documentation
-For API docs, we are using [Swagger](https://swagger.io/) with [Swag](https://github.com/swaggo/swag) Generator
-- Install Swag
-```sh
-go install github.com/swaggo/swag/cmd/swag@latest
-```
-- Generate apidoc
-```sh
-make apidoc
-```
-- Start API documentations
-```sh
-go run cmd/api/main.go
-```
-- Access API Documentation with  browser http://localhost:PORT/apidoc
-
-
 
 ### Unit test
 *tips: if you use `VS Code` as your code editor, you can install extension `golang.go` and follow tutorial [showing code coverage after saving your code](https://dev.to/vuong/golang-in-vscode-show-code-coverage-of-after-saving-test-8g0) to help you create unit test*
@@ -84,10 +67,6 @@ make test
 - Docker Build for APP
 ```sh
 docker build -t go-ch-manager-app:1.0.1 -f ./deploy/docker/app/Dockerfile .
-```
-- Docker Build for API
-```sh
-docker build -t go-ch-manager-api:1.0.1 -f ./deploy/docker/api/Dockerfile .
 ```
 - Run docker compose for API and Workers
 ```sh

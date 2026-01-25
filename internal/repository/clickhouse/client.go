@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"reflect"
+	"sync"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
@@ -25,13 +26,37 @@ type ClickHouseClient interface {
 	ExecuteQueryWithResults(ctx context.Context, conn *entity.CHConnection, query string) (*entity.QueryResult, error)
 }
 
-type clientImpl struct{}
+type clientImpl struct {
+	conns map[string]driver.Conn
+	mu    sync.RWMutex
+}
 
 func NewClickHouseClient() ClickHouseClient {
-	return &clientImpl{}
+	return &clientImpl{
+		conns: make(map[string]driver.Conn),
+	}
 }
 
 func (c *clientImpl) getConnection(conn *entity.CHConnection) (driver.Conn, error) {
+	// Create a unique key for the connection configuration
+	key := fmt.Sprintf("%v|%s|%d|%s|%s|%v|%s", conn.ID, conn.Host, conn.Port, conn.Username, conn.Database, conn.UseSSL, conn.Protocol)
+
+	c.mu.RLock()
+	existingConn, ok := c.conns[key]
+	c.mu.RUnlock()
+
+	if ok {
+		// Verify if connection is still alive
+		if err := existingConn.Ping(context.Background()); err == nil {
+			return existingConn, nil
+		}
+		// If dead, remove from pool and close (safely)
+		_ = existingConn.Close()
+		c.mu.Lock()
+		delete(c.conns, key)
+		c.mu.Unlock()
+	}
+
 	addr := fmt.Sprintf("%s:%d", conn.Host, conn.Port)
 
 	options := &clickhouse.Options{
@@ -63,7 +88,21 @@ func (c *clientImpl) getConnection(conn *entity.CHConnection) (driver.Conn, erro
 		}
 	}
 
-	return clickhouse.Open(options)
+	newConn, err := clickhouse.Open(options)
+	if err != nil {
+		return nil, err
+	}
+
+	// Verify new connection immediately
+	if err := newConn.Ping(context.Background()); err != nil {
+		return nil, err
+	}
+
+	c.mu.Lock()
+	c.conns[key] = newConn
+	c.mu.Unlock()
+
+	return newConn, nil
 }
 
 func (c *clientImpl) Ping(ctx context.Context, conn *entity.CHConnection) error {
@@ -71,7 +110,6 @@ func (c *clientImpl) Ping(ctx context.Context, conn *entity.CHConnection) error 
 	if err != nil {
 		return err
 	}
-	defer func() { _ = db.Close() }() // connection is interface, Close returns error but we ignore for defer
 
 	if err := db.Ping(ctx); err != nil {
 		if exception, ok := err.(*clickhouse.Exception); ok {
@@ -87,7 +125,6 @@ func (c *clientImpl) GetDatabases(ctx context.Context, conn *entity.CHConnection
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = db.Close() }()
 
 	var dbs []string
 	query := "SHOW DATABASES"
@@ -113,7 +150,6 @@ func (c *clientImpl) GetTables(ctx context.Context, conn *entity.CHConnection) (
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = db.Close() }()
 
 	if conn.Database == "" {
 		conn.Database = "default"
@@ -148,7 +184,6 @@ func (c *clientImpl) GetCreateSQL(ctx context.Context, conn *entity.CHConnection
 	if err != nil {
 		return "", err
 	}
-	defer func() { _ = db.Close() }()
 
 	if conn.Database == "" {
 		conn.Database = "default"
@@ -181,7 +216,6 @@ func (c *clientImpl) GetServerInfo(ctx context.Context, conn *entity.CHConnectio
 	if err != nil {
 		return "", err
 	}
-	defer func() { _ = db.Close() }()
 
 	var version string
 	if err := db.QueryRow(ctx, "SELECT version()").Scan(&version); err != nil {
@@ -195,7 +229,6 @@ func (c *clientImpl) GetSchema(ctx context.Context, conn *entity.CHConnection, t
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = db.Close() }()
 
 	query := "SELECT name, type FROM system.columns WHERE table = ? AND database = ?"
 	if conn.Database == "" {
@@ -236,7 +269,6 @@ func (c *clientImpl) ExecuteQueryWithStats(ctx context.Context, conn *entity.CHC
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = db.Close() }()
 
 	queryID := uuid.New().String()
 
@@ -318,7 +350,6 @@ func (c *clientImpl) ExecuteQueryWithResults(ctx context.Context, conn *entity.C
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = db.Close() }()
 
 	queryID := uuid.New().String()
 	ctxQuery := clickhouse.Context(ctx, clickhouse.WithQueryID(queryID))

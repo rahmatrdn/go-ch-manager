@@ -75,21 +75,8 @@ func main() {
 	presenterJson := json.NewJsonPresenter()
 	parser := parser.NewParser()
 
-	// RabbitMQ Configuration (if needed)
-	// queue, err := config.NewRabbitMQInstance(context.Background(), &cfg.RabbitMQOption)
-	// if err != nil {zp
-	// 	log.Fatal(err)
-	// }
-
 	// Redis Configuration (if needed)
 	// redisDB := config.NewRedis(&cfg.RedisOption)
-
-	// PostgreSQL Initialization
-	// gormLogger := config.NewGormLogPostgreConfig(&cfg.MysqlOption)
-	// postgreDB, err := config.NewPostgreSQL(cfg.AppEnv, &cfg.PostgreSqlOption, gormLogger)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 
 	// AUTH : Write authetincation mechanism method (JWT, Basic Auth, etc.)
 

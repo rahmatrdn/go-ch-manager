@@ -78,3 +78,5 @@ internal/usecase/storage/*
 .qodo
 
 .app
+
+database/sqlite/*
