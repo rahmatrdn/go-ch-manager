@@ -40,7 +40,7 @@ Goals
 ```sh
 git clone https://github.com/rahmatrdn/go-ch-manager.git
 ```
-2. Copy `example.env` to `.env`
+2. Copy `.env.example` to `.env`
 ```sh
 cp .env.example .env
 ```
