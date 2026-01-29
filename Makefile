@@ -57,3 +57,30 @@ windows-arm64:
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+# =========================
+# Desktop App (Wails)
+# =========================
+DESKTOP_PACKAGE=./cmd/desktop
+
+.PHONY: desktop-dev desktop-build desktop-build-darwin desktop-build-windows
+
+# Run desktop app in development mode
+desktop-dev:
+	cd cmd/desktop && wails dev
+
+# Build desktop app for current platform
+desktop-build:
+	cd cmd/desktop && wails build
+
+# Build desktop app for macOS (universal binary)
+desktop-build-darwin:
+	cd cmd/desktop && wails build -platform darwin/universal
+
+# Build desktop app for Windows
+desktop-build-windows:
+	cd cmd/desktop && wails build -platform windows/amd64
+
+# Build desktop app for Linux
+desktop-build-linux:
+	cd cmd/desktop && wails build -platform linux/amd64

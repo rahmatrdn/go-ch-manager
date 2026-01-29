@@ -10,10 +10,11 @@ Goals
 - Enable faster troubleshooting and optimization with actionable insights and metrics
 
 ## Tech Stacks
-- Go 1.25+
+- Go 1.24+
 - ClickHouse
 - Go Fiber
 - SQLite
+- Wails v2 (Desktop App)
 
 ## Contact
 | Name                   | Email                        | Role    |
@@ -73,6 +74,71 @@ docker build -t go-ch-manager-app:1.0.1 -f ./deploy/docker/app/Dockerfile .
 ```sh
 docker-compose -f docker-compose.yaml up -d
 ```
+
+
+## Desktop App
+
+The desktop app provides a native experience for macOS, Windows, and Linux using [Wails](https://wails.io/).
+
+### Prerequisites
+- Go 1.24+
+- Wails CLI v2
+- Platform-specific requirements:
+  - **macOS**: Xcode Command Line Tools (`xcode-select --install`)
+  - **Windows**: WebView2 (usually pre-installed on Windows 10/11)
+  - **Linux**: `gtk3`, `webkit2gtk` (see [Wails Linux Guide](https://wails.io/docs/gettingstarted/installation#linux))
+
+### Install Wails CLI
+```sh
+go install github.com/wailsapp/wails/v2/cmd/wails@latest
+wails doctor  # Verify installation
+```
+
+### Development Mode
+Run the desktop app with hot-reload:
+```sh
+make desktop-dev
+```
+
+### Building for Distribution
+
+**Build for current platform:**
+```sh
+make desktop-build
+```
+
+**Build for specific platforms:**
+```sh
+# macOS (Universal binary - Intel & Apple Silicon)
+make desktop-build-darwin
+
+# Windows
+make desktop-build-windows
+
+# Linux
+make desktop-build-linux
+```
+
+The built application will be located in `cmd/desktop/build/bin/`.
+
+### Distributing to Others
+
+1. Build the app for the target platform
+2. Compress the output:
+   ```sh
+   # macOS
+   cd cmd/desktop/build/bin
+   zip -r "Go-CH-Manager-macOS.zip" "Go CH Manager.app"
+
+   # Windows - share the .exe file directly
+   # Linux - share the binary directly
+   ```
+3. Share via file sharing service (Google Drive, Dropbox, etc.)
+
+**Note for macOS users:** Since the app is not signed with an Apple Developer certificate, recipients need to:
+1. Right-click the app and select "Open"
+2. Click "Open" in the security dialog
+3. Or go to System Settings > Privacy & Security and click "Open Anyway"
 
 
 ## Contributing
