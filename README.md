@@ -140,6 +140,22 @@ The built application will be located in `cmd/desktop/build/bin/`.
 2. Click "Open" in the security dialog
 3. Or go to System Settings > Privacy & Security and click "Open Anyway"
 
+### Automated Builds (GitHub Actions)
+
+The repository includes a GitHub Actions workflow that automatically builds the desktop app for all platforms.
+
+**Trigger a release build:**
+```sh
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+This will:
+1. Build for macOS (Universal), Windows (amd64), and Linux (amd64)
+2. Create a GitHub Release with all binaries attached
+
+**Manual trigger:** You can also trigger builds manually from the Actions tab using "workflow_dispatch".
+
 
 ## Contributing
 - Create a new branch with a descriptive name that reflects the changes and switch to the new branch. Use the prefix `feature/` for new features or `fix/` for bug fixes.
