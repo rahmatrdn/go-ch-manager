@@ -63,7 +63,7 @@ clean:
 # =========================
 DESKTOP_PACKAGE=./cmd/desktop
 
-.PHONY: desktop-dev desktop-build desktop-build-darwin desktop-build-windows
+.PHONY: desktop-dev desktop-build desktop-build-darwin desktop-build-windows desktop-build-linux
 
 # Run desktop app in development mode
 desktop-dev:

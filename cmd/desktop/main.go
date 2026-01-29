@@ -4,6 +4,7 @@ import (
 	"embed"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/rahmatrdn/go-ch-manager/entity"
 	"github.com/rahmatrdn/go-ch-manager/internal/repository/clickhouse"
@@ -22,15 +23,22 @@ var assets embed.FS
 
 func main() {
 	// SQLite Initialization
-	dbPath := "database/sqlite/ch_manager.db"
-	if err := os.MkdirAll("database/sqlite", os.ModePerm); err != nil {
+	baseDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal("Failed to resolve user config dir:", err)
+	}
+	dataDir := filepath.Join(baseDir, "go-ch-manager")
+	if err := os.MkdirAll(dataDir, 0700); err != nil {
 		log.Fatal("Failed to create SQLite directory:", err)
 	}
+	dbPath := filepath.Join(dataDir, "ch_manager.db")
 	sqliteDB, err := gorm.Open(gormsqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to SQLite:", err)
 	}
-	sqliteDB.AutoMigrate(&entity.CHConnection{}, &entity.SlowQueryReport{}, &entity.QueryHistory{})
+	if err := sqliteDB.AutoMigrate(&entity.CHConnection{}, &entity.SlowQueryReport{}, &entity.QueryHistory{}); err != nil {
+		log.Fatal("Failed to migrate SQLite schema:", err)
+	}
 
 	// Initialize dependencies
 	chClient := clickhouse.NewClickHouseClient()
