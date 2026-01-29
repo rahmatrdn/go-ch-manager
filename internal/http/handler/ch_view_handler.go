@@ -245,6 +245,7 @@ func (h *ViewHandler) ComparePage(c *fiber.Ctx) error {
 
 func (h *ViewHandler) ConsolePage(c *fiber.Ctx) error {
 	id, _ := strconv.ParseInt(c.Params("id"), 10, 64)
+
 	return h.render(c, "connections/console", fiber.Map{
 		"ConnectionID": id,
 		"PageTitle":    "Query Console",

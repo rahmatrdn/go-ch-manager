@@ -95,13 +95,14 @@ func main() {
 		log.Fatal("Failed to connect to SQLite:", err)
 	}
 	// Migrate
-	sqliteDB.AutoMigrate(&entity.CHConnection{}, &entity.SlowQueryReport{})
+	sqliteDB.AutoMigrate(&entity.CHConnection{}, &entity.SlowQueryReport{}, &entity.QueryHistory{})
 
 	// CH Manager Dependencies
 	chClient := clickhouse.NewClickHouseClient()
 	connectionRepo := sqlite.NewConnectionRepository(sqliteDB)
+	historyRepo := sqlite.NewQueryHistoryRepository(sqliteDB)
 	reportRepo := sqlite.NewReportRepository(sqliteDB)
-	connectionUsecase := usecase.NewConnectionUsecase(connectionRepo, chClient)
+	connectionUsecase := usecase.NewConnectionUsecase(connectionRepo, historyRepo, chClient)
 	reportUsecase := usecase.NewReportUsecase(reportRepo, connectionRepo, chClient)
 
 	api := app.Group("/api/v1")

@@ -57,39 +57,66 @@
         </a>
     </div>
 
-    <!-- Query Editor -->
-    <div class="glass p-6 rounded-2xl border border-white/5 shadow-2xl mb-8 animate-fade-in-up">
-        <div class="mb-4 flex justify-between items-center">
-            <label class="text-primary-300 text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
-                Input Query
-            </label>
-            <button id="run-query-btn"
-                class="group flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-5 py-2 rounded-lg font-bold transition-all hover:scale-105 shadow-lg shadow-primary-500/30">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Execute Query
-            </button>
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8 animate-fade-in-up">
+
+        <!-- History Sidebar -->
+        <div class="lg:col-span-1 order-2 lg:order-1">
+            <div class="glass p-4 rounded-xl border border-white/5 h-full max-h-[600px] flex flex-col">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    History
+                </h3>
+
+                <div id="history-list" class="overflow-y-auto custom-scrollbar flex-1 pr-2 space-y-3">
+                    <div class="text-center py-8 text-gray-500 text-sm animate-pulse">Loading history...</div>
+                </div>
+            </div>
         </div>
 
-        <div
-            class="relative shadow-inner rounded-xl overflow-hidden ring-1 ring-white/10 group-hover:ring-primary-500/30 transition-all">
-            <textarea id="query-input"
-                placeholder="SELECT * FROM system.tables LIMIT 10">SELECT * FROM system.tables LIMIT 50</textarea>
-        </div>
+        <!-- Query Editor Column -->
+        <div class="lg:col-span-3 order-1 lg:order-2">
+            <div class="glass p-6 rounded-2xl border border-white/5 shadow-2xl h-full">
+                <div class="mb-4 flex justify-between items-center">
+                    <label class="text-primary-300 text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
+                        Input Query
+                    </label>
+                    <button id="run-query-btn"
+                        class="group flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-5 py-2 rounded-lg font-bold transition-all hover:scale-105 shadow-lg shadow-primary-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Execute Query
+                    </button>
+                </div>
 
-        <div id="query-error" class="bg-red-900/20 border border-red-500/50 rounded-lg p-4 mt-4 hidden animate-pulse">
-            <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p class="text-red-200 text-sm font-mono break-all" id="query-error-text"></p>
+                <div
+                    class="relative shadow-inner rounded-xl overflow-hidden ring-1 ring-white/10 group-hover:ring-primary-500/30 transition-all">
+                    <textarea id="query-input"
+                        placeholder="SELECT * FROM system.tables LIMIT 10">SELECT * FROM system.tables LIMIT 50</textarea>
+                </div>
+
+                <div id="query-error"
+                    class="bg-red-900/20 border border-red-500/50 rounded-lg p-4 mt-4 hidden animate-pulse">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-red-200 text-sm font-mono break-all" id="query-error-text"></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -233,6 +260,9 @@
     const editor = CodeMirror.fromTextArea(document.getElementById("query-input"), editorConfig);
 
     $(document).ready(function () {
+        // Initial load
+        loadHistory();
+
         $('#run-query-btn').click(function () {
             editor.save();
             const query = editor.getValue().trim();
@@ -243,6 +273,17 @@
             $('#results-area').addClass('hidden');
             $('#loading-indicator').removeClass('hidden');
 
+            // Button Loading State
+            const btn = $('#run-query-btn');
+            const originalBtnHtml = btn.html();
+            btn.prop('disabled', true).html(`
+                <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Running...
+            `);
+
             $.ajax({
                 url: `/api/v1/connections/${connId}/query`,
                 method: 'POST',
@@ -252,20 +293,86 @@
                     $('#loading-indicator').addClass('hidden');
                     renderResults(response.data);
 
+                    // Reload history on success
+                    loadHistory();
+
                     // Smooth scroll to results
                     $('html, body').animate({
                         scrollTop: $("#results-area").offset().top - 100
                     }, 500);
+
+                    // Restore button
+                    btn.prop('disabled', false).html(originalBtnHtml);
                 },
                 error: function (err) {
                     $('#loading-indicator').addClass('hidden');
                     const msg = err.responseJSON?.message || err.responseText || "Query execution failed";
                     $('#query-error-text').text(msg);
                     $('#query-error').removeClass('hidden');
+
+                    // Smooth scroll to error
+                    $('html, body').animate({
+                        scrollTop: $("#query-error").offset().top - 100
+                    }, 500);
+
+                    // Restore button
+                    btn.prop('disabled', false).html(originalBtnHtml);
                 }
             });
         });
     });
+
+    function loadHistory() {
+        $.ajax({
+            url: `/api/v1/connections/${connId}/history`,
+            method: 'GET',
+            success: function (response) {
+                renderHistory(response.data);
+            },
+            error: function (err) {
+                console.error("Failed to load history", err);
+                $('#history-list').html('<div class="text-center py-8 text-gray-500 text-sm">Failed to load history</div>');
+            }
+        });
+    }
+
+    function renderHistory(data) {
+        const list = $('#history-list');
+        list.empty();
+
+        if (!data || data.length === 0) {
+            list.html('<div class="text-center py-8 text-gray-500 text-sm">No history yet</div>');
+            return;
+        }
+
+        data.forEach(item => {
+            const dateObj = new Date(item.created_at);
+            const dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            // Escape query for safe HTML attribute usage
+            const safeQuery = escapeHtml(item.query);
+
+            const html = `
+                <div class="group relative bg-white/5 hover:bg-white/10 p-3 rounded-lg transition-all border border-transparent hover:border-primary-500/30 animate-fade-in-down">
+                    <div class="flex justify-between items-start mb-2">
+                         <div class="text-xs text-gray-400 font-mono">
+                            <span class="text-gray-500 mr-1">${dateStr}</span>
+                            ${timeStr}
+                        </div>
+                        <button onclick="setQuery(this)" data-query="${safeQuery}" 
+                            class="p-1 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Apply this query">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                            </svg>
+                        </button>
+                    </div>
+                   <div class="text-sm text-gray-200 font-mono line-clamp-3 break-all cursor-pointer hover:text-white" onclick="setQuery(this.parentElement.querySelector('button'))" title="${safeQuery}">${safeQuery}</div>
+                </div>
+            `;
+            list.append(html);
+        });
+    }
 
     function renderResults(data) {
         if (!data) return;
@@ -336,5 +443,13 @@
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
+    }
+
+    // Helper for history click
+    function setQuery(btn) {
+        const query = btn.getAttribute('data-query');
+        editor.setValue(query);
+        // Optional: Auto run?
+        // $('#run-query-btn').click();
     }
 </script>

@@ -10,14 +10,16 @@ import (
 )
 
 type ConnectionUsecase struct {
-	repo     sqlite.ConnectionRepository
-	chClient clickhouse.ClickHouseClient
+	repo        sqlite.ConnectionRepository
+	historyRepo sqlite.QueryHistoryRepository
+	chClient    clickhouse.ClickHouseClient
 }
 
-func NewConnectionUsecase(repo sqlite.ConnectionRepository, chClient clickhouse.ClickHouseClient) *ConnectionUsecase {
+func NewConnectionUsecase(repo sqlite.ConnectionRepository, historyRepo sqlite.QueryHistoryRepository, chClient clickhouse.ClickHouseClient) *ConnectionUsecase {
 	return &ConnectionUsecase{
-		repo:     repo,
-		chClient: chClient,
+		repo:        repo,
+		historyRepo: historyRepo,
+		chClient:    chClient,
 	}
 }
 
@@ -136,6 +138,10 @@ func (u *ConnectionUsecase) GetSchema(ctx context.Context, id int64, table strin
 	return schema, createSQL, nil
 }
 
+func (u *ConnectionUsecase) GetQueryHistory(ctx context.Context, connectionID int64) ([]*entity.QueryHistory, error) {
+	return u.historyRepo.FindByConnectionID(ctx, connectionID, 50)
+}
+
 func (u *ConnectionUsecase) CompareQueries(ctx context.Context, id int64, query1, query2 string) (*entity.CompareResult, error) {
 	conn, err := u.repo.FindByID(ctx, id)
 	if err != nil {
@@ -170,7 +176,24 @@ func (u *ConnectionUsecase) ExecuteQuery(ctx context.Context, id int64, query st
 		return nil, nil // Or return not found error
 	}
 
-	return u.chClient.ExecuteQueryWithResults(ctx, conn, query)
+	result, err := u.chClient.ExecuteQueryWithResults(ctx, conn, query)
+	if err != nil {
+		return nil, err
+	}
+
+	// Save to history (Async or Sync? Sync for now to simple)
+	go func() {
+		// Create a new context for the background task to avoid cancellation if the request context is cancelled
+		bgCtx := context.Background()
+		history := &entity.QueryHistory{
+			ConnectionID: id,
+			Query:        query,
+		}
+		_ = u.historyRepo.Create(bgCtx, history)
+		_ = u.historyRepo.Prune(bgCtx, id, 50)
+	}()
+
+	return result, nil
 }
 
 func (u *ConnectionUsecase) GetConfigurationData(ctx context.Context, id int64) (*entity.ConfigurationData, error) {

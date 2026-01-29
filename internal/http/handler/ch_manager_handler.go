@@ -33,6 +33,8 @@ func (h *ConnectionHandler) Register(api fiber.Router) {
 	connections.Get("/:id/tables", h.GetConnectionTables)
 	connections.Get("/:id/tables/:table/schema", h.GetTableSchema)
 	connections.Post("/:id/compare-query", h.CompareQueries)
+	connections.Post("/:id/compare-query", h.CompareQueries)
+	connections.Get("/:id/history", h.GetConnectionHistory)
 	connections.Post("/:id/query", h.HandleExecuteQuery)
 }
 
@@ -148,4 +150,13 @@ func (h *ConnectionHandler) HandleExecuteQuery(c *fiber.Ctx) error {
 	}
 
 	return h.presenter.BuildSuccess(c, result, "Query Executed", 200)
+}
+
+func (h *ConnectionHandler) GetConnectionHistory(c *fiber.Ctx) error {
+	id, _ := strconv.ParseInt(c.Params("id"), 10, 64)
+	history, err := h.usecase.GetQueryHistory(c.Context(), id)
+	if err != nil {
+		return h.presenter.BuildError(c, err)
+	}
+	return h.presenter.BuildSuccess(c, history, "History Retrieved", 200)
 }
