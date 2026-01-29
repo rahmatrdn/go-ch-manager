@@ -1,0 +1,241 @@
+{{define "connections/configuration"}}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Configuration</h1>
+            <p class="text-sm text-gray-500">System configuration and status for {{.Data.ClusterInfo.ClusterName}}</p>
+        </div>
+        <div class="flex space-x-2">
+            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                {{.Data.ClusterInfo.Version}}
+            </span>
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                Uptime: {{.Data.ClusterInfo.Uptime}}s
+            </span>
+        </div>
+    </div>
+
+    <!-- 1. Connection & Cluster Info -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Cluster & Connection</h3>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Display Name</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{.Data.ClusterInfo.DisplayName}}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Host</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{.Data.ClusterInfo.Host}}:{{.Data.ClusterInfo.Port}}
+                    ({{.Data.ClusterInfo.Protocol}})</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Environment</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                    {{if eq .Data.ClusterInfo.Environment "prod"}}
+                    <span class="text-red-600 font-bold">Production</span>
+                    {{else}}
+                    <span class="text-gray-900">Development</span>
+                    {{end}}
+                </dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Topology</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{.Data.ClusterInfo.Shards}} Shards,
+                    {{.Data.ClusterInfo.Replicas}} Replicas</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Timezone</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{.Data.ClusterInfo.Timezone}}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Default DB</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{.Data.ClusterInfo.DatabaseDefault}}</dd>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Resource & Process Stats -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Resource Usage</h3>
+        </div>
+        <div class="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-gray-50 p-4 rounded-lg text-center">
+                <dt class="text-xs font-medium text-gray-500 uppercase">Memory Tracking</dt>
+                <dd class="mt-1 text-2xl font-semibold text-indigo-600">{{.Data.Processes.MemoryTracking}} B</dd>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg text-center">
+                <dt class="text-xs font-medium text-gray-500 uppercase">Queries Active</dt>
+                <dd class="mt-1 text-2xl font-semibold text-indigo-600">{{.Data.Processes.QueriesInProgress}}</dd>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg text-center">
+                <dt class="text-xs font-medium text-gray-500 uppercase">Merges</dt>
+                <dd class="mt-1 text-2xl font-semibold text-indigo-600">{{.Data.Processes.BackgroundMerges}}</dd>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg text-center">
+                <dt class="text-xs font-medium text-gray-500 uppercase">Fetches</dt>
+                <dd class="mt-1 text-2xl font-semibold text-indigo-600">{{.Data.Processes.BackgroundFetches}}</dd>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Users & Roles -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Users & Access Control</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Auth
+                            Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Profile</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quota
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Default Roles</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Host
+                            IP</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {{range .Data.Users}}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{.Name}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.AuthType}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.Profile}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.Quota}}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">
+                            {{range .DefaultRoles}}<span
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 mr-1">{{.}}</span>{{end}}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.HostIP}}</td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. Storage Policies & Disks -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Storage & Disks</h3>
+        </div>
+        <div class="p-6">
+            <div class="mb-6">
+                <h4 class="text-sm font-medium text-gray-900 mb-3">Disks</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {{range .Data.Disks}}
+                    <div class="border rounded-md p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-medium text-sm">{{.Name}}</span>
+                            <span class="text-xs text-gray-500">{{.Type}}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-1">
+                            <!-- Calculate width % in JS usually, here just simple generic or no bar -->
+                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: 20%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <span>Free: {{.FreeSpace}}</span>
+                            <span>Total: {{.TotalSpace}}</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1 truncate" title="{{.Path}}">{{.Path}}</p>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-medium text-gray-900 mb-3">Storage Policies</h4>
+                <div class="space-y-4">
+                    {{range .Data.StoragePolicies}}
+                    <div class="bg-gray-50 p-3 rounded text-sm">
+                        <span class="font-bold">{{.Name}}</span>
+                        <span class="mx-2 text-gray-400">|</span>
+                        <span class="text-gray-600">Volumes:</span>
+                        {{range .Volumes}}
+                        <span class="ml-1 px-2 py-0.5 bg-white border rounded text-xs">{{.Name}} ({{range .Disks}}{{.}}
+                            {{end}})</span>
+                        {{end}}
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Settings (Collapsible) -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <details>
+            <summary class="px-6 py-4 border-b border-gray-200 cursor-pointer flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900 inline">System Settings</h3>
+                <span class="text-sm text-gray-500">{{len .Data.Settings}} items</span>
+            </summary>
+            <div class="overflow-x-auto max-h-96 overflow-y-auto">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase">Value</th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-500 uppercase">Changed</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {{range .Data.Settings}}
+                        <tr>
+                            <td class="px-6 py-2 whitespace-nowrap font-mono text-xs text-gray-700"
+                                title="{{.Description}}">{{.Name}}</td>
+                            <td class="px-6 py-2 max-w-xs truncate" title="{{.Value}}">{{.Value}}</td>
+                            <td class="px-6 py-2 whitespace-nowrap">
+                                {{if .Changed}}
+                                <span class="px-2 py-0.5 rounded text-xs bg-yellow-100 text-yellow-800">Yes</span>
+                                {{else}}
+                                <span class="text-gray-400 text-xs">Default</span>
+                                {{end}}
+                            </td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </details>
+    </div>
+
+    <!-- 6. Logging -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Logging & Observability</h3>
+        </div>
+        <div class="p-6">
+            <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Query Log</dt>
+                    <dd class="mt-1 text-sm text-gray-900 flex items-center">
+                        {{if .Data.LogConfig.QueryLog.Enabled}}
+                        <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span> Enabled
+                        {{else}}
+                        <span class="h-2 w-2 rounded-full bg-red-400 mr-2"></span> Disabled
+                        {{end}}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Flush Interval</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{.Data.LogConfig.QueryLog.FlushInterval}} ms</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Log Size (Est.)</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{.Data.LogConfig.QueryLog.Size}} bytes</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</div>
+{{end}}

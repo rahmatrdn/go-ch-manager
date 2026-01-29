@@ -86,21 +86,30 @@ func main() {
 	// _ = usecase.NewLogUsecase(queue)  // LogUsecase is a sample usecase for sending log to queue (Mongodb, ElasticSearch, etc.)
 
 	// SQLite Initialization for CH Manager
-	sqliteDB, err := gorm.Open(gormsqlite.Open("database/sqlite/ch_manager.db"), &gorm.Config{})
+	dbPath := "database/sqlite/ch_manager.db"
+	if err := os.MkdirAll("database/sqlite", os.ModePerm); err != nil {
+		log.Fatal("Failed to create SQLite directory:", err)
+	}
+	sqliteDB, err := gorm.Open(gormsqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to SQLite:", err)
 	}
 	// Migrate
-	sqliteDB.AutoMigrate(&entity.CHConnection{})
+	sqliteDB.AutoMigrate(&entity.CHConnection{}, &entity.SlowQueryReport{})
 
 	// CH Manager Dependencies
 	chClient := clickhouse.NewClickHouseClient()
 	connectionRepo := sqlite.NewConnectionRepository(sqliteDB)
+	reportRepo := sqlite.NewReportRepository(sqliteDB)
 	connectionUsecase := usecase.NewConnectionUsecase(connectionRepo, chClient)
+	reportUsecase := usecase.NewReportUsecase(reportRepo, connectionRepo, chClient)
 
 	api := app.Group("/api/v1")
 
 	handler.NewConnectionHandler(parser, presenterJson, connectionUsecase).Register(api)
+
+	// Register Report Handler
+	handler.NewReportHandler(reportUsecase, connectionUsecase).Register(app)
 
 	// Register View Handler (MPA)
 	// Note: View routes are correctly registered at root level by this handler

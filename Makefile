@@ -1,36 +1,59 @@
-APIDOC_BASE = cmd/api
-APIDOC_INFO = internal/http/handler
-MYSQL_URI   = mysql://$(MYSQL_USERNAME):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/$(MYSQL_DATABASE_NAME)
+APP_NAME=go-ch-manager
+BUILD_DIR=.build
+DIST_DIR=$(BUILD_DIR)/dist
+MAIN_PACKAGE=./cmd/app
+LDFLAGS=-s -w
 
-include .env
+.PHONY: all clean prepare release
 
-migrate:
-	migrate create -ext sql -dir database/migration/ -seq $(create)
+all: release
 
-migrate_up:
-	migrate -path database/migration -database '$(MYSQL_URI)' -verbose up
+release: prepare \
+	darwin-amd64 darwin-arm64 \
+	linux-amd64 linux-arm64 \
+	windows-amd64 windows-arm64
 
-migrate_down:
-	migrate -path database/migration -database '$(MYSQL_URI)' -verbose down
+prepare:
+	mkdir -p $(DIST_DIR)
 
-migrate_rollback:
-	migrate -path database/migration -database '$(MYSQL_URI)' -verbose down $(shell echo ${step}-1 | bc)
+# =========================
+# Darwin
+# =========================
+darwin-amd64:
+	GOOS=darwin GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o $(DIST_DIR)/$(APP_NAME) $(MAIN_PACKAGE)
+	tar -czf $(BUILD_DIR)/$(APP_NAME).darwin-amd64.tar.gz -C $(DIST_DIR) $(APP_NAME)
+	rm -f $(DIST_DIR)/$(APP_NAME)
 
-migrate_fix: 
-	migrate -path database/migration -database '$(MYSQL_URI)' force $(version)
+darwin-arm64:
+	GOOS=darwin GOARCH=arm64 go build -ldflags "$(LDFLAGS)" -o $(DIST_DIR)/$(APP_NAME) $(MAIN_PACKAGE)
+	tar -czf $(BUILD_DIR)/$(APP_NAME).darwin-arm64.tar.gz -C $(DIST_DIR) $(APP_NAME)
+	rm -f $(DIST_DIR)/$(APP_NAME)
 
-test:
-	go test -cover -coverprofile=coverage.out $$(go list ./...)
+# =========================
+# Linux
+# =========================
+linux-amd64:
+	GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o $(DIST_DIR)/$(APP_NAME) $(MAIN_PACKAGE)
+	tar -czf $(BUILD_DIR)/$(APP_NAME).linux-amd64.tar.gz -C $(DIST_DIR) $(APP_NAME)
+	rm -f $(DIST_DIR)/$(APP_NAME)
 
-apidoc:
-	swag init -d $(APIDOC_BASE),$(APIDOC_INFO) --parseInternal --pd
+linux-arm64:
+	GOOS=linux GOARCH=arm64 go build -ldflags "$(LDFLAGS)" -o $(DIST_DIR)/$(APP_NAME) $(MAIN_PACKAGE)
+	tar -czf $(BUILD_DIR)/$(APP_NAME).linux-arm64.tar.gz -C $(DIST_DIR) $(APP_NAME)
+	rm -f $(DIST_DIR)/$(APP_NAME)
 
-protob:
-	protoc --go_out=proto/pb --go_opt=paths=source_relative --go-grpc_out=proto/pb --go-grpc_opt=paths=source_relative proto/*.proto
+# =========================
+# Windows
+# =========================
+windows-amd64:
+	GOOS=windows GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o $(DIST_DIR)/$(APP_NAME).exe $(MAIN_PACKAGE)
+	cd $(DIST_DIR) && zip ../../$(BUILD_DIR)/$(APP_NAME).windows-amd64.zip $(APP_NAME).exe
+	rm -f $(DIST_DIR)/$(APP_NAME).exe
 
-coverage:
-	go test ./... -coverprofile cover.out
-	go tool cover -func cover.out
+windows-arm64:
+	GOOS=windows GOARCH=arm64 go build -ldflags "$(LDFLAGS)" -o $(DIST_DIR)/$(APP_NAME).exe $(MAIN_PACKAGE)
+	cd $(DIST_DIR) && zip ../../$(BUILD_DIR)/$(APP_NAME).windows-arm64.zip $(APP_NAME).exe
+	rm -f $(DIST_DIR)/$(APP_NAME).exe
 
-mock:
-	mockery
+clean:
+	rm -rf $(BUILD_DIR)

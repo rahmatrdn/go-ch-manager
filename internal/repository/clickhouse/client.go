@@ -24,6 +24,15 @@ type ClickHouseClient interface {
 	GetSchema(ctx context.Context, conn *entity.CHConnection, tableName string) (*entity.TableSchema, error)
 	ExecuteQueryWithStats(ctx context.Context, conn *entity.CHConnection, query string) (*entity.QueryStats, error)
 	ExecuteQueryWithResults(ctx context.Context, conn *entity.CHConnection, query string) (*entity.QueryResult, error)
+
+	// Configuration Menu Methods
+	GetClusterConfig(ctx context.Context, conn *entity.CHConnection) (*entity.ClusterInfo, error)
+	GetSettings(ctx context.Context, conn *entity.CHConnection) ([]entity.CHSetting, error)
+	GetUsers(ctx context.Context, conn *entity.CHConnection) ([]entity.CHUser, error)
+	GetRoles(ctx context.Context, conn *entity.CHConnection) ([]entity.CHRole, error)
+	GetStoragePolicies(ctx context.Context, conn *entity.CHConnection) ([]entity.StoragePolicy, []entity.Disk, error)
+	GetProcessStats(ctx context.Context, conn *entity.CHConnection) (*entity.ProcessStats, error)
+	GetLogConfig(ctx context.Context, conn *entity.CHConnection) (*entity.LogConfig, error)
 }
 
 type clientImpl struct {

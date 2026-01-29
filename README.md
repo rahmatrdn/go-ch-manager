@@ -48,6 +48,7 @@ cp .env.example .env
 ```sh
 go run cmd/app/main.go
 ```
+8. Open `http://localhost:7011` in your browser
 
 
 ### Unit test

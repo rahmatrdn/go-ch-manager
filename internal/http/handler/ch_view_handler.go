@@ -31,6 +31,7 @@ func (h *ViewHandler) Register(api fiber.Router) {
 	api.Get("/connections/:id/tables/:table", h.TableDetails)
 	api.Get("/connections/:id/compare", h.ComparePage)
 	api.Get("/connections/:id/console", h.ConsolePage)
+	api.Get("/connections/:id/configuration", h.ConfigurationPage)
 }
 
 // Helper to render view with global data (Sidebar)
@@ -248,5 +249,26 @@ func (h *ViewHandler) ConsolePage(c *fiber.Ctx) error {
 		"ConnectionID": id,
 		"PageTitle":    "Query Console",
 		"ActiveMenu":   " console",
+	})
+}
+
+func (h *ViewHandler) ConfigurationPage(c *fiber.Ctx) error {
+	id, _ := strconv.ParseInt(c.Params("id"), 10, 64)
+
+	// Check connection status first? Or just fetch config.
+	// We want to fetch all config data
+	data, err := h.usecase.GetConfigurationData(c.Context(), id)
+	if err != nil {
+		return h.render(c, "error", fiber.Map{"Error": err.Error()})
+	}
+	if data == nil {
+		return c.Status(404).SendString("Connection not found")
+	}
+
+	return h.render(c, "connections/configuration", fiber.Map{
+		"ConnectionID": id,
+		"Data":         data,
+		"PageTitle":    "Configuration",
+		"ActiveMenu":   " configuration",
 	})
 }

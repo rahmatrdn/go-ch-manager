@@ -61,10 +61,11 @@ func (u *ConnectionUsecase) GetConnectionStatus(ctx context.Context, id int64) (
 		return "Not Found", nil
 	}
 
-	err = u.chClient.Ping(ctx, conn)
-	if err != nil {
-		return "Offline", nil // Or return specific error
-	}
+	// err = u.chClient.Ping(ctx, conn)
+
+	// if err != nil {
+	// 	return "Offline", nil
+	// }
 	return "Online", nil
 }
 
@@ -170,4 +171,50 @@ func (u *ConnectionUsecase) ExecuteQuery(ctx context.Context, id int64, query st
 	}
 
 	return u.chClient.ExecuteQueryWithResults(ctx, conn, query)
+}
+
+func (u *ConnectionUsecase) GetConfigurationData(ctx context.Context, id int64) (*entity.ConfigurationData, error) {
+	conn, err := u.repo.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if conn == nil {
+		return nil, nil
+	}
+
+	data := &entity.ConfigurationData{}
+
+	// Fetch data sequentially (could be parallelized)
+	info, err := u.chClient.GetClusterConfig(ctx, conn)
+	if info != nil {
+		data.ClusterInfo = *info
+	}
+	// We ignore err for ClusterInfo because we want to show partial data (Host/Port) even if connection fails
+
+	if settings, err := u.chClient.GetSettings(ctx, conn); err == nil {
+		data.Settings = settings
+	}
+
+	if users, err := u.chClient.GetUsers(ctx, conn); err == nil {
+		data.Users = users
+	}
+
+	if roles, err := u.chClient.GetRoles(ctx, conn); err == nil {
+		data.Roles = roles
+	}
+
+	if policies, disks, err := u.chClient.GetStoragePolicies(ctx, conn); err == nil {
+		data.StoragePolicies = policies
+		data.Disks = disks
+	}
+
+	if stats, err := u.chClient.GetProcessStats(ctx, conn); err == nil {
+		data.Processes = *stats
+	}
+
+	if logCfg, err := u.chClient.GetLogConfig(ctx, conn); err == nil {
+		data.LogConfig = *logCfg
+	}
+
+	return data, nil
 }

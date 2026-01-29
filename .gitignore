@@ -80,3 +80,5 @@ internal/usecase/storage/*
 .app
 
 database/sqlite/*
+
+.build/*
