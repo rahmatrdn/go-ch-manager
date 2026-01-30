@@ -2,12 +2,16 @@
 # Go ClickHouse Manager
 
 ## Description
-`go-ch-manager` is a powerful and efficient tool built to simplify and optimize ClickHouse database management.
+`go-ch-manager` is a powerful, lightweight, and efficient management tool designed to simplify day-to-day operations of ClickHouse databases at scale.
+It provides engineers, data teams, and platform owners with deep visibility into query execution, system performance, storage usage, and cluster health—all from a centralized and easy-to-use interface.
+
+Built with performance and operability in mind, go-ch-manager helps teams move from reactive firefighting to proactive optimization by turning raw ClickHouse system data into actionable insights.
 
 Goals
 - Simplify ClickHouse administration by providing clear visibility and centralized control
 - Quickly identify performance bottlenecks in queries, storage, and resource usage
 - Enable faster troubleshooting and optimization with actionable insights and metrics
+- Improve Operational Confidence & Stability
 
 ## Tech Stacks
 - Go 1.25+
