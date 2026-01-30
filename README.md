@@ -1,7 +1,8 @@
 
 # Go ClickHouse Manager
 
-## Description
+<img width="2928" height="2102" alt="image" src="https://github.com/user-attachments/assets/02d35212-d914-415e-a2f3-c03d7ff45b94" />
+
 `go-ch-manager` is a powerful, lightweight, and efficient management tool designed to simplify day-to-day operations of ClickHouse databases at scale.
 It provides engineers, data teams, and platform owners with deep visibility into query execution, system performance, storage usage, and cluster health—all from a centralized and easy-to-use interface.
 
