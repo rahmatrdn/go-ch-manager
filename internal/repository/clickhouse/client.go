@@ -12,7 +12,6 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/google/uuid"
 	"github.com/rahmatrdn/go-ch-manager/entity"
-	"github.com/rahmatrdn/go-ch-manager/internal/helper"
 )
 
 type ClickHouseClient interface {
@@ -101,7 +100,6 @@ func (c *clientImpl) getConnection(conn *entity.CHConnection) (driver.Conn, erro
 	if err != nil {
 		return nil, err
 	}
-	helper.DumpWithTitle(newConn, "newConn")
 
 	// Verify new connection immediately
 	if err := newConn.Ping(context.Background()); err != nil {
@@ -287,7 +285,6 @@ func (c *clientImpl) ExecuteQueryWithStats(ctx context.Context, conn *entity.CHC
 	ctxQuery := clickhouse.Context(ctx, clickhouse.WithQueryID(queryID))
 
 	clickhouse.WithQueryID(queryID)
-	helper.DumpWithTitle(queryID, "queryID")
 
 	start := time.Now()
 	// Execute main query
@@ -328,9 +325,6 @@ func (c *clientImpl) ExecuteQueryWithStats(ctx context.Context, conn *entity.CHC
 		parts       uint64
 		marks       uint64
 	)
-
-	helper.DumpWithTitle(statsQuery, "statsQuery")
-	helper.DumpWithTitle(queryID, "queryID")
 
 	// Retry loop? just once for now.
 	err = db.QueryRow(ctx, statsQuery, queryID).Scan(&qDuration, &readRows, &readBytes, &memoryUsage, &parts, &marks)

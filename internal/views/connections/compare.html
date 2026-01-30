@@ -110,6 +110,16 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
         </button>
+        <button onclick="openFavListModal()"
+            class="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 text-base font-bold text-white transition-all duration-200 bg-gray-700 rounded-full hover:bg-gray-600 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-gray-500 overflow-hidden ml-2 pt-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            <span>Favorites</span>
+        </button>
+
         <p id="error-msg"
             class="text-red-400 bg-red-900/20 border border-red-500/30 rounded-lg px-4 py-2 mt-4 inline-block hidden font-medium">
         </p>
@@ -120,6 +130,17 @@
         <div class="flex items-center gap-3 mb-6">
             <h2 class="text-xl font-bold text-white">Analysis Results</h2>
             <div class="h-px bg-gray-800 flex-1"></div>
+            <div class="h-px bg-gray-800 flex-1"></div>
+            <div class="h-px bg-gray-800 flex-1"></div>
+            <button onclick="openFavSaveModal()"
+                class="group relative inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-bold text-white transition-all duration-200 bg-primary-600 border border-primary-500 rounded-lg hover:bg-primary-500 hover:border-primary-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-primary-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span>Add to Favorite</span>
+            </button>
         </div>
 
         <div class="glass overflow-hidden rounded-xl border border-white/5 shadow-2xl">
@@ -144,6 +165,88 @@
                 class="bg-gray-800 px-1 py-0.5 rounded text-gray-400">system.query_log</code>
         </div>
     </div>
+</div>
+
+</div>
+
+<!-- Favorites List Modal -->
+<div id="fav-list-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true"
+            onclick="closeFavListModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div
+            class="inline-block align-bottom bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full border border-gray-700">
+            <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start justify-between mb-4">
+                    <h3 class="text-lg leading-6 font-medium text-white">Saved Comparisons</h3>
+                    <button onclick="closeFavListModal()" class="text-gray-400 hover:text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-gray-700/50">
+                            <tr>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    Date</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    Title</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fav-table-body" class="divide-y divide-gray-700">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add to Favorite Modal -->
+<div id="fav-save-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true"
+            onclick="closeFavSaveModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div
+            class="inline-block align-bottom bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-700">
+            <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start justify-between mb-4">
+                    <h3 class="text-lg leading-6 font-medium text-white">Save Comparison</h3>
+                    <button onclick="closeFavSaveModal()" class="text-gray-400 hover:text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Title / Description</label>
+                    <input type="text" id="fav-title-input"
+                        class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                        placeholder="My Optimization Test">
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="saveFavorite()"
+                            class="bg-primary-600 hover:bg-primary-500 text-white px-4 py-2 rounded-lg font-medium transition-colors">Save
+                            Comparison</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <style>
@@ -319,5 +422,106 @@
 
     function formatNumber(num) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // --- Favorites Logic ---
+    let favorites = [];
+
+    function openFavListModal() {
+        $('#fav-list-modal').removeClass('hidden');
+        loadFavorites();
+    }
+
+    function closeFavListModal() {
+        $('#fav-list-modal').addClass('hidden');
+    }
+
+    function openFavSaveModal() {
+        $('#fav-save-modal').removeClass('hidden');
+    }
+
+    function closeFavSaveModal() {
+        $('#fav-save-modal').addClass('hidden');
+    }
+
+    function loadFavorites() {
+        // Changed URL to remove /api/v1 prefix as handler routes are registered on root
+        $.get(`/connections/${connId}/compare/favorites`, function (data) {
+            favorites = data || [];
+            renderFavoritesTable();
+        });
+    }
+
+    function renderFavoritesTable() {
+        let html = '';
+        if (favorites.length === 0) {
+            html = '<tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">No saved comparisons found.</td></tr>';
+        } else {
+            favorites.forEach(fav => {
+                const date = new Date(fav.created_at).toLocaleString();
+                html += `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">${date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">${fav.title}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                            <button onclick="loadFavorite(${fav.id})" class="text-primary-400 hover:text-primary-300 mr-3 font-medium">Load & View</button>
+                             <button onclick="deleteFavorite(${fav.id})" class="text-red-400 hover:text-red-300">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        $('#fav-table-body').html(html);
+    }
+
+    function saveFavorite() {
+        const title = $('#fav-title-input').val();
+        cm1.save();
+        cm2.save();
+        const q1 = cm1.getValue();
+        const q2 = cm2.getValue();
+
+        if (!title || !q1 || !q2) {
+            alert("Title and Queries are required.");
+            return;
+        }
+
+        // Changed URL to remove /api/v1 prefix
+        $.ajax({
+            url: `/connections/${connId}/compare/favorite`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ title: title, query1: q1, query2: q2 }),
+            success: function () {
+                $('#fav-title-input').val('');
+                closeFavSaveModal();
+                alert("Saved successfully");
+            },
+            error: function (err) {
+                alert("Failed to save: " + (err.responseJSON?.message || err.responseText));
+            }
+        });
+    }
+
+    function deleteFavorite(id) {
+        if (!confirm("Are you sure?")) return;
+        // Changed URL to remove /api/v1 prefix
+        $.ajax({
+            url: `/connections/${connId}/compare/favorites/${id}`,
+            method: 'DELETE',
+            success: function () {
+                loadFavorites();
+            }
+        });
+    }
+
+    function loadFavorite(id) {
+        const fav = favorites.find(f => f.id === id);
+        if (fav) {
+            cm1.setValue(fav.query1);
+            cm2.setValue(fav.query2);
+            closeFavListModal();
+            $('#results-section').addClass('hidden');
+        }
     }
 </script>

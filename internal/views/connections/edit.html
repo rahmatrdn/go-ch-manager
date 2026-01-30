@@ -17,6 +17,36 @@
                         required>
                 </div>
 
+                <div>
+                    <label class="block text-gray-300 text-sm font-semibold mb-2">Environment</label>
+                    <div class="grid grid-cols-3 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="label" value="DEVELOPMENT" class="peer sr-only" {{if or (eq
+                                .Connection.Label "DEVELOPMENT" ) (eq .Connection.Label "" )}}checked{{end}}>
+                            <div
+                                class="p-2 rounded-lg border border-gray-700 bg-gray-900/40 text-center text-gray-400 peer-checked:bg-blue-500/20 peer-checked:text-blue-400 peer-checked:border-blue-500/50 transition-all hover:bg-gray-800">
+                                Development
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="label" value="STAGING" class="peer sr-only" {{if eq
+                                .Connection.Label "STAGING" }}checked{{end}}>
+                            <div
+                                class="p-2 rounded-lg border border-gray-700 bg-gray-900/40 text-center text-gray-400 peer-checked:bg-amber-500/20 peer-checked:text-amber-400 peer-checked:border-amber-500/50 transition-all hover:bg-gray-800">
+                                Staging
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="label" value="PRODUCTION" class="peer sr-only" {{if eq
+                                .Connection.Label "PRODUCTION" }}checked{{end}}>
+                            <div
+                                class="p-2 rounded-lg border border-gray-700 bg-gray-900/40 text-center text-gray-400 peer-checked:bg-red-500/20 peer-checked:text-red-400 peer-checked:border-red-500/50 transition-all hover:bg-gray-800">
+                                Production
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="md:col-span-3">
                         <label class="block text-gray-300 text-sm font-semibold mb-2">Host</label>

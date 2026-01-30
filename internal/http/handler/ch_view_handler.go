@@ -30,6 +30,9 @@ func (h *ViewHandler) Register(api fiber.Router) {
 	api.Get("/connections/:id/tables", h.ConnectionTables) // Stats & Table List
 	api.Get("/connections/:id/tables/:table", h.TableDetails)
 	api.Get("/connections/:id/compare", h.ComparePage)
+	api.Post("/connections/:id/compare/favorite", h.SaveCompareFavorite)
+	api.Get("/connections/:id/compare/favorites", h.GetCompareFavorites)
+	api.Delete("/connections/:id/compare/favorites/:fav_id", h.DeleteCompareFavorite)
 	api.Get("/connections/:id/console", h.ConsolePage)
 	api.Get("/connections/:id/configuration", h.ConfigurationPage)
 }
@@ -77,8 +80,16 @@ func (h *ViewHandler) HandleCreateConnection(c *fiber.Ctx) error {
 	// Checkbox handling: HTML forms don't send anything for unchecked boxes
 	conn.UseSSL = c.FormValue("use_ssl") == "on"
 
+	if conn.Label == "" {
+		conn.Label = "DEVELOPMENT"
+	}
+
 	if err := h.usecase.CreateConnection(c.Context(), &conn); err != nil {
-		return c.Status(500).SendString(err.Error())
+		return h.render(c, "connections/create", fiber.Map{
+			"PageTitle": "New Connection",
+			"Error":     err.Error(),
+			"Form":      conn,
+		})
 	}
 	return c.Redirect("/")
 }
@@ -118,6 +129,10 @@ func (h *ViewHandler) HandleUpdateConnection(c *fiber.Ctx) error {
 
 	conn.ID = id
 	conn.UseSSL = c.FormValue("use_ssl") == "on"
+
+	if conn.Label == "" {
+		conn.Label = "DEVELOPMENT"
+	}
 
 	if err := h.usecase.UpdateConnection(c.Context(), id, &conn); err != nil {
 		return c.Status(500).SendString(err.Error())
@@ -241,6 +256,51 @@ func (h *ViewHandler) ComparePage(c *fiber.Ctx) error {
 		"Status":       conn,
 		"ActiveMenu":   " compare",
 	})
+}
+
+func (h *ViewHandler) SaveCompareFavorite(c *fiber.Ctx) error {
+	id, _ := strconv.ParseInt(c.Params("id"), 10, 64)
+	var input struct {
+		Title  string `json:"title"`
+		Query1 string `json:"query1"`
+		Query2 string `json:"query2"`
+	}
+
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid input"})
+	}
+
+	fav := &entity.FavoriteComparison{
+		ConnectionID: id,
+		Title:        input.Title,
+		Query1:       input.Query1,
+		Query2:       input.Query2,
+	}
+
+	if err := h.usecase.SaveFavoriteComparison(c.Context(), fav); err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.JSON(fiber.Map{"message": "Saved successfully", "data": fav})
+}
+
+func (h *ViewHandler) GetCompareFavorites(c *fiber.Ctx) error {
+	id, _ := strconv.ParseInt(c.Params("id"), 10, 64)
+	favs, err := h.usecase.GetFavoriteComparisons(c.Context(), id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.JSON(favs)
+}
+
+func (h *ViewHandler) DeleteCompareFavorite(c *fiber.Ctx) error {
+	favID, _ := strconv.ParseInt(c.Params("fav_id"), 10, 64)
+	if err := h.usecase.DeleteFavoriteComparison(c.Context(), favID); err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.JSON(fiber.Map{"message": "Deleted successfully"})
 }
 
 func (h *ViewHandler) ConsolePage(c *fiber.Ctx) error {

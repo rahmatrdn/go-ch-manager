@@ -1,17 +1,42 @@
 <div class="max-w-6xl mx-auto animate-fade-in-down">
     <!-- Connection Status Banner -->
-    <div class="mb-10 p-8 glass rounded-2xl border border-white/5 relative overflow-hidden shadow-2xl group">
-        <div class="absolute inset-0 bg-gradient-to-r from-primary-900/40 to-blue-900/20 pointer-events-none"></div>
+    <!-- Connection Status Banner -->
+    <div
+        class="mb-10 p-8 glass rounded-2xl border border-white/5 relative overflow-hidden shadow-2xl shadow-primary-500/30 group">
+        <!-- Background Gradients -->
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900 to-amber-900/40 pointer-events-none">
+        </div>
         <div
-            class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity transform scale-150 rotate-12 pointer-events-none">
-            <svg class="w-32 h-32 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            class="absolute top-0 right-0 w-full h-full bg-gradient-to-l from-primary-500/10 via-transparent to-transparent pointer-events-none">
+        </div>
+        <div
+            class="absolute -bottom-1/2 -right-20 w-96 h-96 bg-primary-500/20 rounded-full blur-[100px] pointer-events-none">
+        </div>
+
+        <!-- Decoration -->
+        <div
+            class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-30 transition-opacity transform scale-150 rotate-12 pointer-events-none">
+            <svg class="w-40 h-40 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"
+                    d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
         </div>
 
         <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-                <h1 class="text-4xl font-extrabold text-white mb-3 tracking-tight">{{.Connection.Name}}</h1>
+                <div class="flex items-center gap-3 mb-3">
+                    <h1 class="text-4xl font-extrabold text-white tracking-tight">{{.Connection.Name}}</h1>
+                    {{if eq .Connection.Label "PRODUCTION"}}
+                    <span
+                        class="px-2.5 py-0.5 rounded text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30">PRODUCTION</span>
+                    {{else if eq .Connection.Label "STAGING"}}
+                    <span
+                        class="px-2.5 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">STAGING</span>
+                    {{else}}
+                    <span
+                        class="px-2.5 py-0.5 rounded text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">DEVELOPMENT</span>
+                    {{end}}
+                </div>
                 <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-gray-300 text-sm font-medium">
                     <span class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-full border border-white/5">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary-400" fill="none"
@@ -53,7 +78,7 @@
     </div>
 
     <!-- Tools Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in-up">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in-up">
         <!-- Explorer Card -->
         <a href="/connections/{{.Connection.ID}}/tables"
             class="group bg-gray-900/40 p-8 rounded-2xl border border-gray-600 hover:border-primary-500/50 hover:bg-gray-800 transition-all duration-300 hover:shadow-2xl hover:shadow-primary-900/10 hover:-translate-y-1 relative overflow-hidden">
@@ -142,6 +167,36 @@
             <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Compare</h3>
             <p class="text-gray-400 text-sm leading-relaxed">Analyze performance differences between query versions
                 side-by-side.</p>
+        </a>
+
+        <!-- Reports Card (New) -->
+        <a href="/connections/{{.Connection.ID}}/reports/slow-queries"
+            class="group bg-gray-900/40 p-8 rounded-2xl border border-gray-600 hover:border-amber-500/50 hover:bg-gray-800 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/10 hover:-translate-y-1 relative overflow-hidden">
+            <div
+                class="absolute inset-0 bg-gradient-to-br from-amber-500/0 to-amber-500/0 group-hover:to-amber-500/5 transition-all duration-500">
+            </div>
+
+            <div class="flex items-center justify-between mb-6 relative z-10">
+                <div
+                    class="p-3 bg-amber-500/10 rounded-xl text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 box-shadow-glow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <div
+                    class="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center group-hover:border-amber-500/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 group-hover:text-amber-400"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">Reports
+            </h3>
+            <p class="text-gray-400 text-sm leading-relaxed">Analyze slow queries and performance metrics.</p>
         </a>
 
         <!-- Configuration Card (New) -->

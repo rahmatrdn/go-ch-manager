@@ -12,13 +12,15 @@ import (
 type ConnectionUsecase struct {
 	repo        sqlite.ConnectionRepository
 	historyRepo sqlite.QueryHistoryRepository
+	favRepo     sqlite.FavoriteRepository
 	chClient    clickhouse.ClickHouseClient
 }
 
-func NewConnectionUsecase(repo sqlite.ConnectionRepository, historyRepo sqlite.QueryHistoryRepository, chClient clickhouse.ClickHouseClient) *ConnectionUsecase {
+func NewConnectionUsecase(repo sqlite.ConnectionRepository, historyRepo sqlite.QueryHistoryRepository, favRepo sqlite.FavoriteRepository, chClient clickhouse.ClickHouseClient) *ConnectionUsecase {
 	return &ConnectionUsecase{
 		repo:        repo,
 		historyRepo: historyRepo,
+		favRepo:     favRepo,
 		chClient:    chClient,
 	}
 }
@@ -27,8 +29,17 @@ func (u *ConnectionUsecase) CreateConnection(ctx context.Context, conn *entity.C
 	conn.CreatedAt = time.Now()
 	conn.UpdatedAt = time.Now()
 	// Optionally test connection before saving?
-	// err := u.chClient.Ping(ctx, conn)
-	// if err != nil { return err }
+	// Try to ping the connection
+	if err := u.chClient.Ping(ctx, conn); err != nil {
+		return err
+	}
+
+	// Fetch and save server info
+	info, err := u.chClient.GetServerInfo(ctx, conn)
+	if err == nil {
+		conn.ServerInfo = info
+	}
+
 	return u.repo.Create(ctx, conn)
 }
 
@@ -47,6 +58,16 @@ func (u *ConnectionUsecase) UpdateConnection(ctx context.Context, id int64, conn
 	conn.CreatedAt = existing.CreatedAt // Preserve created_at
 
 	// Optional: validate connection
+	if err := u.chClient.Ping(ctx, conn); err != nil {
+		return err
+	}
+
+	// Fetch and save server info
+	info, err := u.chClient.GetServerInfo(ctx, conn)
+	if err == nil {
+		conn.ServerInfo = info
+	}
+
 	return u.repo.Update(ctx, conn)
 }
 
@@ -79,7 +100,7 @@ func (u *ConnectionUsecase) GetServerInfo(ctx context.Context, id int64) (string
 	if conn == nil {
 		return "", nil
 	}
-	return u.chClient.GetServerInfo(ctx, conn)
+	return conn.ServerInfo, nil
 }
 
 func (u *ConnectionUsecase) GetDatabases(ctx context.Context, id int64) ([]string, error) {
@@ -240,4 +261,16 @@ func (u *ConnectionUsecase) GetConfigurationData(ctx context.Context, id int64) 
 	}
 
 	return data, nil
+}
+
+func (u *ConnectionUsecase) SaveFavoriteComparison(ctx context.Context, fav *entity.FavoriteComparison) error {
+	return u.favRepo.Create(ctx, fav)
+}
+
+func (u *ConnectionUsecase) GetFavoriteComparisons(ctx context.Context, connectionID int64) ([]*entity.FavoriteComparison, error) {
+	return u.favRepo.FindAllByConnectionID(ctx, connectionID)
+}
+
+func (u *ConnectionUsecase) DeleteFavoriteComparison(ctx context.Context, id int64) error {
+	return u.favRepo.Delete(ctx, id)
 }
