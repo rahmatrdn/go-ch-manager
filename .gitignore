@@ -82,3 +82,10 @@ internal/usecase/storage/*
 database/sqlite/*
 
 .build/*
+
+# Wails build artifacts
+cmd/desktop/build/
+cmd/desktop/frontend/node_modules/
+cmd/desktop/frontend/dist/wailsbindings.js
+cmd/desktop/frontend/wailsjs/
+cmd/desktop/database/

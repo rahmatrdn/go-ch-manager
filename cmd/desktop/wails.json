@@ -1,0 +1,20 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "go-ch-manager",
+  "outputfilename": "Go CH Manager",
+  "frontend:install": "",
+  "frontend:build": "",
+  "frontend:dev:watcher": "",
+  "frontend:dev:serverUrl": "",
+  "author": {
+    "name": "Rahmat Ramadhan Putra",
+    "email": "rahmatrdn.dev@gmail.com"
+  },
+  "info": {
+    "companyName": "CH Manager",
+    "productName": "Go CH Manager",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright 2026",
+    "comments": "ClickHouse Database Management Tool"
+  }
+}
